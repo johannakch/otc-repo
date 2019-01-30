@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app'
+    'app',
+    'crispy_forms'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -52,6 +53,8 @@ MIDDLEWARE_CLASSES = [
 ]
 
 ROOT_URLCONF = 'otc.urls'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
