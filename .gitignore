@@ -5,8 +5,11 @@ __pycache__/
 local_settings.py
 db.sqlite3
 media
+otc/venv/
 
 # User-specific stuff
+.idea/*
+otc/.idea/*
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
