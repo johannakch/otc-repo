@@ -3,12 +3,30 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-        Hi {{ user.username }}!
-        <p><a href="{% url 'logout' %}">logout</a></p>
-        <p><a href="{% url 'password_change' %}">Change Password</a></p>
-    {% else %}
-        Hi, you are not logged in. Go and <a href="{% url 'login' %}">login</a>!
-    {% endif %}
+    <br/>
+    <div class="container">
+        {% if user.is_authenticated %}
+            <div class="row">
+                <div class="col-8">
+                    Hi {{ user.get_full_name }}!
+                </div>
+                <div class="col">
+                    <a href="{% url 'password_change' %}">Change Password</a>
+                </div>
+                <div class="col">
+
+                    <a href="{% url 'logout' %}">Logout</a>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col">
+                    {{ calendar }}
+                </div>
+            </div>
+        {% else %}
+            Hi, you are not logged in. Go and <a href="{% url 'login' %}">login</a>!
+        {% endif %}
+    </div>
 
 {% endblock %}
