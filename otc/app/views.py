@@ -44,11 +44,9 @@ def show_event(request, id):
     context['id'] = id
     event = Event.objects.get(id=id)
 
-    players_list = [" ".join([player['first_name'],player['last_name']]) for player in event.players.values() if event.players.values()]
+    players_list = [player.get_full_name() for player in event.players.all() if event.players.all()]
     print(players_list)
     context['players'] = players_list
-
-    print(event.externPlayer1)
 
     context['event'] = event
 

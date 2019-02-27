@@ -21,6 +21,54 @@
 
             {% csrf_token %}
             {{ form|crispy }}
+            <!-- <div class="row">
+                <div class="col-6">
+                    {{ form.title|as_crispy_field }}
+                </div>
+                <div class="col-6">
+                    {{ form.type|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    {{ form.start_time|as_crispy_field }}
+                </div>
+                <div class="col-6">
+                    {{ form.number|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="dropdown">
+
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                aria-haspopup="true" aria-expanded="false"
+                                data-toggle="dropdown">{{ form.players.label }}*
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            {% for item in form.players %}
+                                <div class="dropdown-item">{{ item }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    {{ form.externPlayer1|as_crispy_field }}
+                </div>
+                <div class="col-4">
+                    {{ form.externPlayer2|as_crispy_field }}
+                </div>
+                <div class="col-4">
+                    {{ form.externPlayer3|as_crispy_field }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    {{ form.notes|as_crispy_field }}
+                </div>
+            </div> -->
 
             <button type="submit" class="save btn btn-success">speichern</button>
             <a href="{% url 'index' %}" class="btn btn-secondary active" role="button" aria-pressed="true">abbrechen</a>
