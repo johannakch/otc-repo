@@ -4,14 +4,29 @@
 {% block title %}Neue Reservierung{% endblock %}
 
 {% block content %}
-    <br/>
-    <h2>Neue Reservierung <small class="text-muted">am {{ date }}</small></h2>
-    <form method="post" novalidate>
+    <div class="container">
+        <br/>
+        <div class="row">
+            <div class="col-11">
+                <h2>Neue Reservierung
+                    <small class="text-muted">am {{ date }}</small>
+                </h2>
+            </div>
+            <div class="col-1">
+                <a href="{% url 'index' %}">zurück</a>
+            </div>
+        </div>
 
-        {% csrf_token %}
-        {{ form|crispy }}
+        <form method="post" novalidate>
 
-        <button type="submit" class="save btn btn-success">speichern</button>
-    </form>
+            {% csrf_token %}
+            {{ form|crispy }}
+
+            <button type="submit" class="save btn btn-success">speichern</button>
+            <a href="{% url 'index' %}" class="btn btn-secondary active" role="button" aria-pressed="true">abbrechen</a>
+        </form>
+        <br/>
+    </div>
+
 
 {% endblock %}
