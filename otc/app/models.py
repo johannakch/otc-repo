@@ -18,7 +18,7 @@ class GameTypeChoice(Enum):   # A subclass of Enum
 
 
 class Event(models.Model):
-    day = models.DateField(u'Tag', help_text=u'Tag der Reservierung')
+    day = models.DateField(u'Datum', help_text=u'Tag der Reservierung')
     start_time = models.TimeField(u'Startzeit', help_text=u'Beginn der Reservierung')
     duration = models.PositiveSmallIntegerField(u'Dauer', help_text=u'Stundenanzahl', default=1, validators=[MaxValueValidator(12), MinValueValidator(1)])
     notes = models.TextField(u'Notizen', help_text=u'Beschreibung/Zusätzliche Infos', blank=True, null=True)
@@ -48,8 +48,8 @@ class Event(models.Model):
         return overlap
 
     def get_absolute_url(self):
-        url = reverse('admin:%s_%s_change' % (self._meta.app_label, self._meta.model_name), args=[self.id])
-        return u'<a href="%s">%s</a>' % (url, str(self.start_time))
+        url = reverse('show_event', args=[self.id])
+        return u'<a href="%s">%s</a>' % (url, self.title)
 
     def clean(self):
         events = Event.objects.filter(day=self.day)
@@ -62,3 +62,6 @@ class Event(models.Model):
 
     def get_end_time(self):
         return self.start_time.replace(hour=(self.start_time.hour+self.duration))
+
+    def __str__(self):
+        return self.title

@@ -5,7 +5,6 @@ from app.models import Event
 
 class EventForm(forms.ModelForm):
 
-
     class Meta:
         model = Event
         fields = ('title', 'type', 'start_time', 'players', 'number', 'duration',

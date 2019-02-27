@@ -11,7 +11,7 @@ class EventCalendar(HTMLCalendar):
         super(EventCalendar, self).__init__()
         self.events = events
 
-    def formatday(self, day, weekday, events, themonth, theyear):
+    def formatday(self, day, weekday, themonth, theyear, events):
         """
         Return a day as a table cell.
         """
@@ -24,36 +24,69 @@ class EventCalendar(HTMLCalendar):
         if day == 0:
             return '<td class="noday">&nbsp;</td>'  # day outside month
         else:
+
             url = reverse('add_event', args=(theyear, themonth, day))
             return '<td class="%s"><a href="%s">%d</a>%s</td>' % (self.cssclasses[weekday], url, day, events_html)
 
 
-    def formatweek(self, theday, themonth, theyear):
+    def formatweek(self, today, themonth, theyear):
         """
         Return a complete week as a table row.
         """
+        # startdate and enddate of current week
+        start, end = self.week_magic(today)
 
-        start, end = self.week_magic(theday)
-        #theweek = 0
-        for week in self.monthdays2calendar(theyear, themonth):
-            if (week[0][0] == start.day or week[-1][0] == end.day):
-                theweek = week
+
+        theweek = []
+        for week in self.monthdatescalendar(theyear, themonth):
+            if (week[0].day == start.day and week[-1].day == end.day):
+                i = 0
+                for date in week:
+                    theweek.append((date.day, i, date.month, date.year))
+                    i += 1
+
+        if theweek == []:
+            # initialize theweek with 0 values if no current week not found
+            theweek = [(0, 0, 0, 0), (0, 1, 0, 0), (0, 2, 0, 0), (0, 3, 0, 0), (0, 4, 0, 0), (0, 5, 0, 0), (0, 6, 0, 0)]
+
+        # get all Events during the current week
         events = Event.objects.filter(day__lte=end).filter(day__gte=start)
 
         v = []
         a = v.append
-        a('<table border="0" cellpadding="0" cellspacing="0" class="month">')
+        a('<div class="table-responsive">')
+        a('<table class="table table-striped month" border="0" cellpadding="0" cellspacing="0">')
         a('\n')
         a(self.formatmonthname(theyear, themonth, withyear=True))
         a('\n')
         a(self.formatweekheader())
         a('\n')
-        s = ''.join(self.formatday(d, wd, events, themonth, theyear) for (d, wd) in theweek)
+        s = ''.join(self.formatday(d, wd, m, y, events) for (d, wd, m, y) in theweek)
         a('<tr>%s</tr>' % s)
 
         a('</table>')
+        a('</div>')
         a('\n')
-        return ''.join(v)
+        table = ''.join(v)
+        print("TABLE:", table)
+
+
+        table = table.replace('<td ', '<td  width="150" height="100"')
+        table = table.replace('<th class="mon">Mon</th><th class="tue">Tue</th>'
+                              '<th class="wed">Wed</th><th class="thu">Thu</th>'
+                              '<th class="fri">Fri</th><th class="sat">Sat</th>'
+                              '<th class="sun">Sun</th>', '<th class="mon">Montag</th>'
+                              '<th class="mon">Dienstag</th><th class="mon">Mittwoch</th>'
+                              '<th class="mon">Donnerstag</th><th class="mon">Freitag</th>'
+                              '<th class="mon">Samstag</th><th class="mon">Sonntag</th>')
+        return table
+
+
+    def formatmonthname(self, theyear, themonth, withyear=True):
+        year_dic = {1: "Januar", 2: "Februar", 3: "März", 4: "April", 5: "Mai", 6: "Juni", 7: "Juli", 8: "August", 9: "September", 10: "Oktober", 11: "November", 12: "Dezember"}
+        monthname = '<tr><th colspan="7" scope="col" class="month">%s %d</th><//tr>' % (year_dic[themonth], theyear)
+
+        return monthname
 
 
     def week_magic(self, day):

@@ -5,7 +5,7 @@
 
 {% block content %}
     <br/>
-    <h2>Neue Reservierung <small>am {{ date }}</small></h2>
+    <h2>Neue Reservierung <small class="text-muted">am {{ date }}</small></h2>
     <form method="post" novalidate>
 
         {% csrf_token %}

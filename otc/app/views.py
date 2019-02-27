@@ -2,7 +2,6 @@ import datetime
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from calendar import HTMLCalendar
 
 from django.urls import reverse
 from django.utils.safestring import mark_safe
@@ -21,12 +20,8 @@ def index(request):
 
 def create_base_calendar():
     today = datetime.date.today()
-    cal = EventCalendar()
-    week = cal.monthdays2calendar(today.year, today.month)
-    week = today.isocalendar()[1]
-    html_calendar = cal.formatweek(today, today.month, today.year)
-    html_calendar = html_calendar.replace('<td ', '<td  width="150" height="100"')
-    return html_calendar
+    cal = EventCalendar().formatweek(today, today.month, today.year)
+    return cal
 
 def add_event(request, year, month, day):
     context = {}
@@ -42,3 +37,19 @@ def add_event(request, year, month, day):
         context['form'] = EventForm()
 
     return render(request, 'app/add_event.html', context)
+
+def show_event(request, id):
+    context = {}
+
+    context['id'] = id
+    event = Event.objects.get(id=id)
+
+    players_list = [" ".join([player['first_name'],player['last_name']]) for player in event.players.values() if event.players.values()]
+    print(players_list)
+    context['players'] = players_list
+
+    print(event.externPlayer1)
+
+    context['event'] = event
+
+    return render(request, 'app/show_event.html', context)

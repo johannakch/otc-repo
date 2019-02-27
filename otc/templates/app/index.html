@@ -7,13 +7,13 @@
     <div class="container">
         {% if user.is_authenticated %}
             <div class="row">
-                <div class="col-8">
+                <div class="col-9">
                     Hi {{ user.get_full_name }}!
                 </div>
-                <div class="col">
+                <div class="col-2">
                     <a href="{% url 'password_change' %}">Change Password</a>
                 </div>
-                <div class="col">
+                <div class="col-1">
 
                     <a href="{% url 'logout' %}">Logout</a>
                 </div>
@@ -21,7 +21,9 @@
             <br/>
             <div class="row">
                 <div class="col">
-                    {{ calendar }}
+
+                        {{ calendar }}
+
                 </div>
             </div>
         {% else %}
