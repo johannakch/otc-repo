@@ -13,13 +13,15 @@ from app.models import Event
 
 
 def index(request):
+    #print("REQUEST:",request.GET)
     context = {}
-    cal = create_base_calendar()
+    today = datetime.date.today()
+    cal = create_base_calendar(today)
     context['calendar'] = mark_safe(cal)
+
     return render(request, 'app/index.html', context)
 
-def create_base_calendar():
-    today = datetime.date.today()
+def create_base_calendar(today):
     cal = EventCalendar().formatweek(today, today.month, today.year)
     return cal
 
@@ -32,6 +34,9 @@ def add_event(request, year, month, day):
             new_event = new_event_form.save(commit=False)
             new_event.day = datetime.date(year=int(year), month=int(month), day=int(day))
             new_event.save()
+            new_event_form.save_m2m()
+            # TODO: request.user sollte nicht in der Liste auswaehlbar sein und erst hier dem Event hinzugefuegt werden:
+            # new_event.players.add(request.user)
             return HttpResponseRedirect(reverse('index'))
     else:
         context['form'] = EventForm()
@@ -45,7 +50,6 @@ def show_event(request, id):
     event = Event.objects.get(id=id)
 
     players_list = [player.get_full_name() for player in event.players.all() if event.players.all()]
-    print(players_list)
     context['players'] = players_list
 
     context['event'] = event

@@ -22,11 +22,15 @@ class EventCalendar(HTMLCalendar):
         events_html += "</ul>"
 
         if day == 0:
-            return '<td class="noday">&nbsp;</td>'  # day outside month
+            return '<td class="noday">&nbsp;</td>'
         else:
-
-            url = reverse('add_event', args=(theyear, themonth, day))
-            return '<td class="%s"><a href="%s">%d</a>%s</td>' % (self.cssclasses[weekday], url, day, events_html)
+            # check if date to show is in the past
+            current_date = datetime.date(year=theyear, month=themonth, day=day)
+            if current_date < datetime.date.today():
+                return '<td class="%s">%d%s</td>' % (self.cssclasses[weekday], day, events_html)
+            else:
+                url = reverse('add_event', args=(theyear, themonth, day))
+                return '<td class="%s"><a href="%s">%d</a>%s</td>' % (self.cssclasses[weekday], url, day, events_html)
 
 
     def formatweek(self, today, themonth, theyear):
@@ -55,7 +59,7 @@ class EventCalendar(HTMLCalendar):
         v = []
         a = v.append
         a('<div class="table-responsive">')
-        a('<table class="table table-striped month" border="0" cellpadding="0" cellspacing="0">')
+        a('<table class="table month" border="0" cellpadding="0" cellspacing="0">')
         a('\n')
         a(self.formatmonthname(theyear, themonth, withyear=True))
         a('\n')

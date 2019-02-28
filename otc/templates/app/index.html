@@ -20,10 +20,23 @@
             </div>
             <br/>
             <div class="row">
+                <div class="col-auto mr-auto">
+                    <p>
+                        <button type="button" class="btn btn-secondary btn-sm">< letzte Woche</button>
+                    </p>
+                </div>
+                <div class="col-auto">
+                    <form method="post">
+                        {% csrf_token %}
+                        <p>
+                            <button type="submit" class="btn btn-secondary btn-sm">nächste Woche ></button>
+                        </p>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col">
-
-                        {{ calendar }}
-
+                    {{ calendar }}
                 </div>
             </div>
         {% else %}
