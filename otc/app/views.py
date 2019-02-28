@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 
 # Create your views here.
 from app.forms import EventForm
-from app.utils import EventCalendar
+from app.utils import EventCalendar, get_year_dic
 from app.models import Event
 
 
@@ -27,7 +27,7 @@ def create_base_calendar(today):
 
 def add_event(request, year, month, day):
     context = {}
-    context['date'] = '{}.{}.{}'.format(day, month, year)
+    context['date'] = format_date(day, month, year)
     if request.method == 'POST':
         new_event_form = EventForm(request.POST)
         if new_event_form.is_valid():
@@ -42,6 +42,10 @@ def add_event(request, year, month, day):
         context['form'] = EventForm()
 
     return render(request, 'app/add_event.html', context)
+
+def format_date(day, month, year):
+    year_dic = get_year_dic()
+    return '{}. {} {}'.format(day, year_dic[int(month)], year)
 
 def show_event(request, id):
     context = {}
