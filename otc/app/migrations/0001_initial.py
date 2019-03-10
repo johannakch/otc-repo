@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('end_time', models.TimeField(help_text='Final time', verbose_name='Final time')),
                 ('notes', models.TextField(blank=True, help_text='Textual Notes', null=True, verbose_name='Textual Notes')),
                 ('title', models.CharField(max_length=200)),
-                ('type', models.CharField(choices=[(app.models.GameTypeChoice('Training (Doppel)'), 'Training (Doppel)'), (app.models.GameTypeChoice('Training (Einzel)'), 'Training (Einzel)'), (app.models.GameTypeChoice('Turnier'), 'Turnier'), (app.models.GameTypeChoice('Event'), 'Event')], max_length=5)),
+                ('type', models.CharField(choices=[(app.models.GameTypeChoice('Doppelspiel'), 'Doppelspiel'), (app.models.GameTypeChoice('Einzelspiel'), 'Einzelspiel'), (app.models.GameTypeChoice('Turnier'), 'Turnier'), (app.models.GameTypeChoice('Event'), 'Event')], max_length=5)),
                 ('number', models.PositiveSmallIntegerField()),
                 ('players', models.ManyToManyField(to=settings.AUTH_USER_MODEL)),
             ],

@@ -38,7 +38,7 @@ class EventCalendar(HTMLCalendar):
         Return a complete week as a table row.
         """
         # startdate and enddate of current week
-        start, end = self.week_magic(today)
+        start, end = week_magic(today)
 
 
         theweek = []
@@ -93,17 +93,26 @@ class EventCalendar(HTMLCalendar):
         return monthname
 
 
-    def week_magic(self, day):
-        day_of_week = day.weekday()
 
-        to_beginning_of_week = datetime.timedelta(days=day_of_week)
-        beginning_of_week = day - to_beginning_of_week
-
-        to_end_of_week = datetime.timedelta(days=6 - day_of_week)
-        end_of_week = day + to_end_of_week
-
-        return (beginning_of_week, end_of_week)
 
 
 def get_year_dic():
     return {1: "Januar", 2: "Februar", 3: "März", 4: "April", 5: "Mai", 6: "Juni", 7: "Juli", 8: "August", 9: "September", 10: "Oktober", 11: "November", 12: "Dezember"}
+
+#falls user schon event in dieser woche hat -> gibt diese methode false zurück
+def hasReservationRight(user, theyear, themonth, day):
+    start, end = week_magic(datetime.date(year=theyear, month=themonth, day=day))
+    weeklyevents = Event.objects.filter(day__range=[start, end])
+    usersevents = weeklyevents.filter(creator=user)
+    usersevents2 = weeklyevents.filter(players__id=user.id)
+    return (not(len(usersevents)>0) and not(len(usersevents2)>0))
+
+def week_magic(day):
+       day_of_week = day.weekday()
+       to_beginning_of_week = datetime.timedelta(days=day_of_week)
+       beginning_of_week = day - to_beginning_of_week
+
+       to_end_of_week = datetime.timedelta(days=6 - day_of_week)
+       end_of_week = day + to_end_of_week
+
+       return (beginning_of_week, end_of_week)

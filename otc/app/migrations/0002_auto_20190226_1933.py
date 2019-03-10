@@ -69,6 +69,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='event',
             name='type',
-            field=models.CharField(choices=[('Training (Einzel)', 'Training (Einzel)'), ('Training (Doppel)', 'Training (Doppel)'), ('Turnier', 'Turnier'), ('Event', 'Event')], max_length=200),
+            field=models.CharField(choices=[('Einzelspiel', 'Einzelspiel'), ('Doppelspiel', 'Doppelspiel'), ('Turnier', 'Turnier'), ('Event', 'Event')], max_length=200),
         ),
     ]

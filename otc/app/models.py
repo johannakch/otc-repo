@@ -11,20 +11,22 @@ import datetime
 User = get_user_model()
 
 class GameTypeChoice(Enum):   # A subclass of Enum
-    trn_ezl = "Training (Einzel)"
-    trn_dpl = "Training (Doppel)"
-    trnr = "Turnier"
+    trn_ezl = "Einzelspiel"
+    trn_dpl = "Doppelspiel"
+    trnr = "Turnier" # z.B: Herren 1 gegen Herren 2
     ev = "Event"
-
+    ab = "Arbeitseinsatz"
+    mr = "Medenrunde"
 
 class Event(models.Model):
+    creator = models.ForeignKey(User, related_name='creator', null=True)
     day = models.DateField(u'Datum', help_text=u'Tag der Reservierung')
     start_time = models.TimeField(u'Startzeit', help_text=u'Beginn der Reservierung')
     duration = models.PositiveSmallIntegerField(u'Dauer', help_text=u'Stundenanzahl', default=1, validators=[MaxValueValidator(12), MinValueValidator(1)])
     notes = models.TextField(u'Notizen', help_text=u'Beschreibung/Zusätzliche Infos', blank=True, null=True)
     title = models.CharField(u'Titel', max_length=200, help_text=u'Titel des Spiels')
     type = models.CharField(u'Einzel/Doppel', max_length=200, choices=[(tag.value, tag.value) for tag in GameTypeChoice], help_text=u'Art des Trainings') #type=GameTypeChoice.trn_dpl
-    players = models.ManyToManyField(User, verbose_name=u'Spieler', blank=True, help_text=u'Wähle dich und deine/n Mitspieler aus')
+    players = models.ManyToManyField(User, related_name='otherplayers', verbose_name=u'Spieler', blank=True, help_text=u'Wähle dich und deine/n Mitspieler aus')
     number = models.PositiveSmallIntegerField(u'Platznummer', default=3, validators=[MaxValueValidator(3), MinValueValidator(1)], help_text=u'Nummer des Tennisplatzes') #set min 1 max 3 default 3
     externPlayer1 = models.CharField(u'Externer 1', max_length=200, help_text='Name des ersten externen Mitspielers (falls vorhanden)', blank=True)
     externPlayer2 = models.CharField(u'Externer 2', max_length=200, help_text='Name des zweiten externen Mitspielers (falls vorhanden)', blank=True)
