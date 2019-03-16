@@ -2,46 +2,54 @@
 
 {% block title %}Home{% endblock %}
 
-{% block content %}
-    <br/>
-    <div class="container">
-        {% if user.is_authenticated %}
-            <div class="row">
-                <div class="col-9">
-                    Hi {{ user.get_full_name }}!
-                </div>
-                <div class="col-2">
-                    <a href="{% url 'password_change' %}">Change Password</a>
-                </div>
-                <div class="col-1">
 
-                    <a href="{% url 'logout' %}">Logout</a>
-                </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="col-auto mr-auto">
-                    <p>
-                        <button type="button" class="btn btn-secondary btn-sm">< letzte Woche</button>
-                    </p>
-                </div>
-                <div class="col-auto">
-                    <form method="post">
-                        {% csrf_token %}
-                        <p>
-                            <button type="submit" class="btn btn-secondary btn-sm">nächste Woche ></button>
-                        </p>
-                    </form>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    {{ calendar }}
-                </div>
-            </div>
-        {% else %}
-            Hi, you are not logged in. Go and <a href="{% url 'login' %}">login</a>!
-        {% endif %}
+{% block content %}
+{% if messages %}
+   <script>
+    {% for message in messages %}
+        alert("{{ message }}");
+    {% endfor %}
+   </script>
+{% endif %}
+<br/>
+<div class="container">
+    {% if user.is_authenticated %}
+    <div class="row">
+        <div class="col-9">
+            Hi {{ user.get_full_name }}!
+        </div>
+        <div class="col-2">
+            <a href="{% url 'password_change' %}">Change Password</a>
+        </div>
+        <div class="col-1">
+
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
     </div>
+    <br/>
+    <div class="row">
+        <div class="col-auto mr-auto">
+            <p>
+                <button type="button" class="btn btn-secondary btn-sm">< letzte Woche</button>
+            </p>
+        </div>
+        <div class="col-auto">
+            <form method="post">
+                {% csrf_token %}
+                <p>
+                    <button type="submit" class="btn btn-secondary btn-sm">nächste Woche ></button>
+                </p>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ calendar }}
+        </div>
+    </div>
+    {% else %}
+    Hi, you are not logged in. Go and <a href="{% url 'login' %}">login</a>!
+    {% endif %}
+</div>
 
 {% endblock %}
