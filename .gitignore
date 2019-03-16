@@ -6,6 +6,7 @@ local_settings.py
 db.sqlite3
 media
 otc/venv/
+otc/otc-env/
 
 # User-specific stuff
 .idea/*

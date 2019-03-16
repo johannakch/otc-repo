@@ -18,6 +18,7 @@
                 {{ form.password|as_crispy_field }}
 
                 <button type="submit" class="btn btn-success">Weiter</button>
+                <a href="{% url 'request_new_password' %}" class="btn btn-secondary active" data-toggle="tooltip" data-placement="right" role="button" aria-pressed="true">Passwort vergessen</a>
             </form>
         </div>
     </div>
