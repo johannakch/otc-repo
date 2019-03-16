@@ -127,3 +127,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/app/'
 LOGOUT_REDIRECT_URL = 'login'
+
+# EMAIL SETTINGS
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'ockenheim.tv@gmail.com'
+EMAIL_HOST_PASSWORD = 'JeGRPPW4L7JkGnxB'
+EMAIL_PORT = 587
