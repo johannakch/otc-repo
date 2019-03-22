@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+
 # Create your views here.
 from app.forms import EventForm
 from app.utils import EventCalendar, get_year_dic, hasReservationRight
@@ -80,3 +81,16 @@ def show_event(request, id):
         context['event'] = event
 
         return render(request, 'app/show_event.html', context)
+
+def get_schools(request, game_type):
+    school_dict = {}
+    school_dict[1] = 1
+    return HttpResponse(simplejson.dumps(school_dict), mimetype="application/json")
+
+def get_centres(request, school_id):
+    school = models.School.objects.get(pk=school_id)
+    centres = models.Centre.objects.filter(school=school)
+    centre_dict = {}
+    for centre in centres:
+        centre_dict[centre.id] = centre.name
+    return HttpResponse(simplejson.dumps(centre_dict), mimetype="application/json")

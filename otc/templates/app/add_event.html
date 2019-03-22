@@ -1,32 +1,82 @@
 {% extends 'base.html' %}
-
+{% load crispy_forms_tags %}
 {% block title %}Neue Reservierung{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <br/>
-        <div class="row">
-            <div class="col-11">
-                <h2>Neue Reservierung {% if is_basic_user %} auf Platz 3 {% endif %}
-                    <small class="text-muted">am {{ date }}</small>
-                </h2>
-            </div>
-            <div class="col-1">
-                <a href="{% url 'index' %}">zurück</a>
-            </div>
+<div class="container">
+    <br/>
+    <div class="row">
+        <div class="col-11">
+            <h2>Neue Reservierung {% if is_basic_user %} auf Platz 3 {% endif %}
+                <small class="text-muted">am {{ date }}</small>
+            </h2>
         </div>
-
-        <form method="post" novalidate>
-
-            {% csrf_token %}
-            {{ form }}
-
-
-            <button type="submit" class="save btn btn-success">speichern</button>
-            <a href="{% url 'index' %}" class="btn btn-secondary active" role="button" aria-pressed="true">abbrechen</a>
-        </form>
-        <br/>
+        <div class="col-1">
+            <a href="{% url 'index' %}">zurück</a>
+        </div>
     </div>
 
+    <!-- <form method="post" id="eventForm" novalidate>
+         {% csrf_token %}
+         {{ form }}
+         <button type="submit" class="save btn btn-success">speichern</button>
+         <a href="{% url 'index' %}" class="btn btn-secondary active" role="button" aria-pressed="true">abbrechen</a>
+     </form>-->
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="col-6">
+            {{ form.type|as_crispy_field }}
+        </div>
+        <div class="row">
+            <div class="col-6">
+                {{ form.start_time|as_crispy_field }}
+            </div>
+            <div class="col-6">
+                {{ form.duration|as_crispy_field }}
+            </div>
+            <div class="col-6">
+                Tennisplatznummer: 3
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="dropdown">
 
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            aria-haspopup="true" aria-expanded="false"
+                            data-toggle="dropdown">{{ form.players.label }}*
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        {% for item in form.players %}
+
+                        <div class="dropdown-item">{{ item }}</div>
+
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                {{ form.externPlayer1|as_crispy_field }}
+            </div>
+            <div class="col-4">
+                {{ form.externPlayer2|as_crispy_field }}
+            </div>
+            <div class="col-4">
+                {{ form.externPlayer3|as_crispy_field }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                {{ form.notes|as_crispy_field }}
+            </div>
+
+            <br/>
+        </div>
+
+        <button type="submit" class="save btn btn-success">speichern</button>
+        <a href="{% url 'index' %}" class="btn btn-secondary active" role="button" aria-pressed="true">abbrechen</a>
+    </form>
+</div>
 {% endblock %}
