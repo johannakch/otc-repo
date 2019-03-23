@@ -54,9 +54,9 @@ def add_event(request, year, month, day, hour):
                    new_event.number = 3
                    # type setzen aus vorheriger buttonauswahl
                    if request.POST.get("einzel-selected", None):
-                       new_event.type = GameTypeChoice.trn_ezl
+                       new_event.type = "Einzelspiel"
                    else:
-                       new_event.type = GameTypeChoice.trn_dpl
+                       new_event.type = "Doppelspiel"
                new_event.title = "Reserviert für"
                new_event.day = datetime.date(year=int(year), month=int(month), day=int(day))
                new_event.save()
@@ -81,6 +81,7 @@ def format_date(day, month, year):
     year_dic = get_year_dic()
     return '{}. {} {}'.format(day, year_dic[int(month)], year)
 
+# TODO: eventuell nur löschen statt edit für user die an der reservierung teilnehmen
 def show_event(request, id):
     context = {}
     iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
