@@ -55,8 +55,7 @@ class EventCalendar(HTMLCalendar):
 
         v = []
         a = v.append
-        a('<div class="table">')
-        a('<table class="table month" border="0" cellpadding="0" cellspacing="0">')
+        a('<table class="table-responsive table month" border="0" cellpadding="0" cellspacing="0">')
         a('\n')
         a(self.formatmonthname(theyear, themonth, withyear=True))
         a('\n')
@@ -71,13 +70,12 @@ class EventCalendar(HTMLCalendar):
                 a('<tr><th scope="row">%s:00</th>%s</tr>' % (str(i), s))
 
         a('</table>')
-        a('</div>')
         a('\n')
         table = ''.join(v)
         print("TABLE:", table)
 
 
-        table = table.replace('<td ', '<td  width="150" height="80"')
+        table = table.replace('<td ', '<td  width="150" height="60"')
         table = table.replace('<th class="mon">Mon</th><th class="tue">Tue</th>'
                               '<th class="wed">Wed</th><th class="thu">Thu</th>'
                               '<th class="fri">Fri</th><th class="sat">Sat</th>'

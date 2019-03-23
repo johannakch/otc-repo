@@ -3,73 +3,102 @@
 
 {% block title %}Reservierungsdetails{% endblock %}
 
+
+{% block navigation_bar %}
+{% if user.is_authenticated %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="https://www.ockenheimer-tennisclub.de/" target="_blank">Ockenheimer Tennisclub
+        e.V.</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'password_change' %}">Passwort ändern</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endif %}
+{% endblock %}
+
 {% block content %}
-    <br/>
-    <div class="container">
-        <div class="row">
-            <div class="col-11">
-                <h2>Reservierung
-                    <small class="text-muted">{{ event.day }}</small>
-                </h2>
-            </div>
-            <div class="col-1">
-                <a href="{% url 'index' %}">zurück</a>
-            </div>
+{% if user.is_authenticated %}
+<br/>
+<div class="container">
+    <div class="row">
+        <div class="col-auto mr-auto">
+            <h2>Reservierung
+                <small class="text-muted">{{ event.day }}</small>
+            </h2>
         </div>
-
-        <br/>
-        <div class="row">
-            <div class="col">
-                <p>Titel: {{ event.title }}</p>
-            </div>
-
-        </div>
-        <div class="row">
-            <div class="col">
-                <p>Typ: {{ event.type }}</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <p>Beginn: {{ event.start_time }} Uhr</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <p>Dauer: {{ event.duration }} Stunde/n</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <p>Spieler:
-                    {% if players %}
-                        {% for p in players %}
-                            {{ p }}
-                        {% endfor %}
-                    {% endif %}
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <p>Platznummer: {{ event.number }}</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <p>Externe: {% if event.externPlayer1 %}{{ event.externPlayer1 }}{% endif %}
-                    {% if event.externPlayer2 %}{{ event.externPlayer2 }}{% endif %}
-                    {% if event.externPlayer3 %}{{ event.externPlayer3 }}{% endif %}
-                    {% if not event.externPlayer1 and not event.externPlayer2 and not event.externPlayer3 %}
-                        / {% endif %}
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <p>Notizen: {% if event.notes %}{{ event.notes }}{% else %} / {% endif %}</p>
-            </div>
+        <div class="col-auto">
+            <a href="{% url 'index' %}" class="btn btn-secondary active" data-toggle="tooltip"
+               data-placement="right" role="button" aria-pressed="true">zurück</a>
         </div>
     </div>
+
+    <br/>
+    <div class="row">
+        <div class="col-sm">
+            <p style="font-weight: 700;">{{ event.title }}:</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <p>Spieler:
+                {% if players %}
+                {% for p in players %}
+                {{ p }}
+                {% endfor %}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <p>Typ: {{ event.type }}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <p>Beginn: {{ event.start_time }} Uhr</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <p>Dauer: {{ event.duration }} Stunde/n</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <p>Platznummer: {{ event.number }}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <p>Externe: {% if event.externPlayer1 %}{{ event.externPlayer1 }}{% endif %}
+                {% if event.externPlayer2 %}{{ event.externPlayer2 }}{% endif %}
+                {% if event.externPlayer3 %}{{ event.externPlayer3 }}{% endif %}
+                {% if not event.externPlayer1 and not event.externPlayer2 and not event.externPlayer3 %}
+                / {% endif %}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <p>Notizen: {% if event.notes %}{{ event.notes }}{% else %} / {% endif %}</p>
+        </div>
+    </div>
+</div>
+
+{% else %}
+{% include "not_registered.html" %}
+{% endif %}
 
 {% endblock %}
