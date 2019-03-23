@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Nicht registriert{% endblock %}
+
+{% block content %}
+<br/>
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            Hi, you are not logged in. Go and <a href="{% url 'login' %}">login</a>!
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,16 +3,41 @@
 
 {% block title %}Reservierungsdetails{% endblock %}
 
+
+{% block navigation_bar %}
+{% if user.is_authenticated %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="https://www.ockenheimer-tennisclub.de/" target="_blank">Ockenheimer Tennisclub
+        e.V.</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'password_change' %}">Passwort ändern</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endif %}
+{% endblock %}
+
 {% block content %}
+{% if user.is_authenticated %}
 <br/>
 <div class="container">
     <div class="row">
-        <div class="col-sm">
+        <div class="col-auto mr-auto">
             <h2>Reservierung
                 <small class="text-muted">{{ event.day }}</small>
             </h2>
         </div>
-        <div class="col-sm">
+        <div class="col-auto">
             <a href="{% url 'index' %}" class="btn btn-secondary active" data-toggle="tooltip"
                data-placement="right" role="button" aria-pressed="true">zurück</a>
         </div>
@@ -71,5 +96,9 @@
         </div>
     </div>
 </div>
+
+{% else %}
+{% include "not_registered.html" %}
+{% endif %}
 
 {% endblock %}

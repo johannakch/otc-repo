@@ -27,6 +27,7 @@
 {% endblock %}
 
 {% block content %}
+{% if user.is_authenticated %}
 {% if messages %}
 <script>
     {%
@@ -39,9 +40,8 @@
 {% endif %}
 <br/>
 <div class="container">
-    {% if user.is_authenticated %}
     <div class="row">
-        <div class="col-9">
+        <div class="col-sm">
             Hi {{ user.get_full_name }}!
         </div>
 
@@ -63,13 +63,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="col">
+        <div class="col-sm">
             {{ calendar }}
         </div>
     </div>
-    {% else %}
-    Hi, you are not logged in. Go and <a href="{% url 'login' %}">login</a>!
-    {% endif %}
 </div>
+{% else %}
+{% include "not_registered.html" %}
+{% endif %}
 
 {% endblock %}
