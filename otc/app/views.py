@@ -27,7 +27,7 @@ def create_base_calendar(today):
     cal = EventCalendar().formatweek(today, today.month, today.year)
     return cal
 
-def add_event(request, year, month, day):
+def add_event(request, year, month, day, hour):
     context = {}
     context['date'] = format_date(day, month, year)
     iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)

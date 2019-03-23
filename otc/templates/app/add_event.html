@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+
+
 {% block title %}Neue Reservierung{% endblock %}
 
 {% block content %}
@@ -22,22 +24,28 @@
          <button type="submit" class="save btn btn-success">speichern</button>
          <a href="{% url 'index' %}" class="btn btn-secondary active" role="button" aria-pressed="true">abbrechen</a>
      </form>-->
+
+    <br/>
     <form method="post" novalidate>
+
         {% csrf_token %}
-        <div class="col-6">
-            {{ form.type|as_crispy_field }}
-        </div>
         <div class="row">
             <div class="col-6">
-                {{ form.start_time|as_crispy_field }}
+                {{ form.type.label }}:
+                {{ form.type }}
             </div>
+        </div>
+        <br/>
+        <div class="row">
             <div class="col-6">
-                {{ form.duration|as_crispy_field }}
+                {{ form.start_time.label }}:
+                {{ form.start_time }}
             </div>
             <div class="col-6">
                 Tennisplatznummer: 3
             </div>
         </div>
+        <br/>
         <div class="row">
             <div class="col-6">
                 <div class="dropdown">
@@ -56,25 +64,29 @@
                 </div>
             </div>
         </div>
+        <br/>
         <div class="row">
             <div class="col-4">
-                {{ form.externPlayer1|as_crispy_field }}
+                {{ form.externPlayer1.label }}:
+                {{ form.externPlayer1 }}
             </div>
             <div class="col-4">
-                {{ form.externPlayer2|as_crispy_field }}
+                {{ form.externPlayer2.label }}:
+                {{ form.externPlayer2 }}
             </div>
             <div class="col-4">
-                {{ form.externPlayer3|as_crispy_field }}
+                {{ form.externPlayer3.label }}:
+                {{ form.externPlayer3 }}
             </div>
         </div>
+        <br/>
         <div class="row">
             <div class="col-6">
-                {{ form.notes|as_crispy_field }}
+                {{ form.notes.label }}:
+                <br/>
+                {{ form.notes }}
             </div>
-
-            <br/>
         </div>
-
         <button type="submit" class="save btn btn-success">speichern</button>
         <a href="{% url 'index' %}" class="btn btn-secondary active" role="button" aria-pressed="true">abbrechen</a>
     </form>
