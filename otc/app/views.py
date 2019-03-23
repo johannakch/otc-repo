@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 # Create your views here.
 from app.forms import EventForm
 from app.utils import EventCalendar, get_year_dic, hasReservationRight
-from app.models import Event
+from app.models import Event, GameTypeChoice
 
 from django.contrib import messages
 
@@ -28,36 +28,54 @@ def create_base_calendar(today):
     return cal
 
 def add_event(request, year, month, day, hour):
-    context = {}
-    context['date'] = format_date(day, month, year)
-    iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
-    if request.method == 'POST':
-        #new_event_form = EventForm(request.POST, is_basic_user=iba)
-        new_event_form = EventForm(request.POST, is_basic_user=iba, year=year, month=month, day=day)
-        if new_event_form.is_valid():
-            new_event = new_event_form.save(commit=False)
-            new_event.creator = request.user
-            new_event.number = 3
-            new_event.title = "Reserviert für"
-            new_event.day = datetime.date(year=int(year), month=int(month), day=int(day))
-            new_event.save()
-            new_event_form.save_m2m()
-            # TODO: request.user sollte nicht in der Liste auswaehlbar sein und erst hier dem Event hinzugefuegt werden:
-            # new_event.players.add(request.user)
-            return HttpResponseRedirect(reverse('index'))
-    else:
-        if (hasReservationRight(request.user, int(year), int(month), int(day))):
-            # boolean der form und html verändert, je nachdem ob es ein basic user oder ein staff/superuser ist
-            context['is_basic_user'] = iba
-            #context['form'] = EventForm(is_basic_user=iba)
-            context['form'] = EventForm(is_basic_user=iba, year=year, month=month, day=day)
-        else :
-            print("Error: No Reservationright")
-            messages.info(request, 'Du hast in dieser Woche kein Recht mehr weitere Reservierungen vorzunehme.')
-            return HttpResponseRedirect(reverse('index'))
-    print(context['form'])
+   context = {}
+   context['date'] = format_date(day, month, year)
+   iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
+   # boolean der form und html verändert, je nachdem ob es ein basic user oder ein staff/superuser ist
+   context['is_basic_user'] = iba
+   einzel = None # wert der sich merkt ob einzel oder doppelbutton oben im form gewählt wurde
+   time_value = datetime.time(int(hour), 00)
+   context[einzel] = True
+   if request.method == 'POST':
+       # initialwerte für duration je nach einzel oder doppel, wenn einer der buttons oben im form gedrückt wurde
+       if 'einzel' in request.POST:
+           context['einzel'] = True
+           context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1}, is_basic_user=iba, year=year, month=month, day=day, type='einzel')
+       elif 'doppel' in request.POST:
+           context['einzel'] = False
+           context['form'] = EventForm(initial={'start_time': time_value, 'duration': 2}, is_basic_user=iba, year=year, month=month, day=day, type='doppel')
+       else:
+           new_event_form = EventForm(request.POST, is_basic_user=iba, year=year, month=month, day=day, type='einzel')
+           context['form'] = new_event_form
+           if new_event_form.is_valid():
+               new_event = new_event_form.save(commit=False)
+               new_event.creator = request.user
+               if iba: # Für basic user immer Platznummer 3
+                   new_event.number = 3
+                   # type setzen aus vorheriger buttonauswahl
+                   if request.POST.get("einzel-selected", None):
+                       new_event.type = GameTypeChoice.trn_ezl
+                   else:
+                       new_event.type = GameTypeChoice.trn_dpl
+               new_event.title = "Reserviert für"
+               new_event.day = datetime.date(year=int(year), month=int(month), day=int(day))
+               new_event.save()
+               new_event_form.save_m2m()
+               # TODO: request.user sollte nicht in der Liste auswaehlbar sein und erst hier dem Event hinzugefuegt werden:
+               # TODO: anzahl der ausgewählten mitspieler muss eingrenzt werden
+               return HttpResponseRedirect(reverse('index'))
+           # TODO: Aussagekräftige Fehlermeldungens
+   else:
+       if (hasReservationRight(request.user, int(year), int(month), int(day))):
+           context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1}, is_basic_user=iba, year=year, month=month, day=day, type='einzel')
+       else:
+           print("Error: No Reservationright")
+           messages.info(request, 'Du hast in dieser Woche kein Recht mehr weitere Reservierungen vorzunehme.')
+           return HttpResponseRedirect(reverse('index'))
+   print(context['form'])
 
-    return render(request, 'app/add_event.html', context)
+   return render(request, 'app/add_event.html', context)
+
 
 def format_date(day, month, year):
     year_dic = get_year_dic()
@@ -81,16 +99,3 @@ def show_event(request, id):
         context['event'] = event
 
         return render(request, 'app/show_event.html', context)
-
-def get_schools(request, game_type):
-    school_dict = {}
-    school_dict[1] = 1
-    return HttpResponse(simplejson.dumps(school_dict), mimetype="application/json")
-
-def get_centres(request, school_id):
-    school = models.School.objects.get(pk=school_id)
-    centres = models.Centre.objects.filter(school=school)
-    centre_dict = {}
-    for centre in centres:
-        centre_dict[centre.id] = centre.name
-    return HttpResponse(simplejson.dumps(centre_dict), mimetype="application/json")

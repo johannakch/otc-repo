@@ -16,17 +16,23 @@
         </div>
     </div>
 
-    <!-- <form method="post" id="eventForm" novalidate>
-         {% csrf_token %}
-         {{ form }}
-         <button type="submit" class="save btn btn-success">speichern</button>
-         <a href="{% url 'index' %}" class="btn btn-secondary active" role="button" aria-pressed="true">abbrechen</a>
-     </form>-->
     <form method="post" novalidate>
         {% csrf_token %}
-        <div class="col-6">
-            {{ form.type|as_crispy_field }}
-        </div>
+       <!-- Show two Buttons for single and double game. They configure the form fields -->
+       <input type="hidden" name="einzel-selected" value="{{einzel}}">
+       {% if is_basic_user %}
+           {% if einzel %}
+          <input type="submit" disabled="true" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
+               <input type="submit" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
+           {% else %}
+               <input type="submit" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
+               <input type="submit" disabled="true" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
+           {% endif %}
+       {% else %}  <!-- Falls ein Admin angemeldet ist -> ganz normal alle types als dropdown -->
+       <div class="col-6">
+           {{ form.type|as_crispy_field }}
+       </div>
+       {% endif %}
         <div class="row">
             <div class="col-6">
                 {{ form.start_time|as_crispy_field }}
@@ -34,9 +40,17 @@
             <div class="col-6">
                 {{ form.duration|as_crispy_field }}
             </div>
-            <div class="col-6">
-                Tennisplatznummer: 3
-            </div>
+           {% if is_basic_user %}
+               <div class="col-6">
+                    Falls normaler User angemeldet ist -> feste platznummer
+                   Tennisplatznummer: 3
+               </div>
+           {% else %}
+                Falls Admin angemeldet ist -> Platz wählen
+               <div class="col-6">
+                   {{ form.number|as_crispy_field }}
+               </div>
+           {% endif %}
         </div>
         <div class="row">
             <div class="col-6">
@@ -57,15 +71,17 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-4">
-                {{ form.externPlayer1|as_crispy_field }}
-            </div>
-            <div class="col-4">
-                {{ form.externPlayer2|as_crispy_field }}
-            </div>
-            <div class="col-4">
-                {{ form.externPlayer3|as_crispy_field }}
-            </div>
+             <div class="col-4">
+               {{ form.externPlayer1|as_crispy_field }}
+           </div>
+            {% if not einzel %}
+           <div class="col-4">
+               {{ form.externPlayer2|as_crispy_field }}
+           </div>
+           <div class="col-4">
+               {{ form.externPlayer3|as_crispy_field }}
+           </div>
+           {% endif %}
         </div>
         <div class="row">
             <div class="col-6">
