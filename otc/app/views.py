@@ -13,9 +13,9 @@ from django.contrib import messages
 def index(request):
     context = {}
     today = datetime.date.today()
-    platz_1 = create_base_calendar(request, today, 1)
-    platz_2 = create_base_calendar(request, today, 2)
-    platz_3 = create_base_calendar(request, today, 3)
+    platz_1 = create_base_calendar(request.user, today, 1)
+    platz_2 = create_base_calendar(request.user, today, 2)
+    platz_3 = create_base_calendar(request.user, today, 3)
 
     context.update({
         'platz_3': mark_safe(platz_3),
