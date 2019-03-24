@@ -5,10 +5,66 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <link type="text/css" media="screen" rel="stylesheet" href="{% static 'css/app/responsive-tables.css' %}"/>
-    <script type="text/javascript" src="{% static 'js/app/responsive-tables.js' %}"></script>
+
     <title>{% block title %}Tennisclub Ockenheim{% endblock %}</title>
+    <style>
+        .navbar-light .navbar-toggler {
+            border: none;
+        }
+
+        .table-scroll {
+            position: relative;
+            max-width: 100%;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .table-wrap {
+            width: 100%;
+            overflow: auto;
+        }
+
+        .table-scroll table {
+            width: 100%;
+            margin: auto;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-scroll th, .table-scroll td {
+            padding: 5px 10px;
+            background: #fff;
+            white-space: nowrap;
+            vertical-align: top;
+        }
+
+        .table thead th {
+            border-bottom: none;
+        }
+
+        .clone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .clone th, .clone td {
+            visibility: hidden;
+        }
+
+
+        .clone tbody th {
+            visibility: visible;
+        }
+
+        .clone .fixed-side {
+            visibility: visible;
+        }
+
+
+    </style>
+
 </head>
 <body>
 <header>
@@ -30,6 +86,10 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
         integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
         crossorigin="anonymous"></script>
-<!--<script type="text/javascript" src="{% static 'js/login/request_new_password.js' %}"></script>-->
+<script>
+    jQuery(document).ready(function () {
+        jQuery(".main-table").clone(true).appendTo('#table-scroll').addClass('clone');
+    });
+</script>
 </body>
 </html>

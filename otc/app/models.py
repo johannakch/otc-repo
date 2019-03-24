@@ -50,10 +50,9 @@ class Event(models.Model):
 
         return overlap
 
-    def get_absolute_url(self):
+    def get_absolute_url(self, type_color):
         url = reverse('show_event', args=[self.id])
-        print(self.players.all())
-        return u'<a href="%s">%s</a>' % (url, self.type + ': ' +', '.join([p.first_name+' '+p.last_name for p in self.players.all()]))
+        return u'<a href="%s" style="color: %s">%s</a>' % (url, type_color['font'],self.title + ': ' +', '.join([p.get_full_name() for p in self.players.all()]))
 
     def clean(self):
         events = Event.objects.filter(day=self.day)

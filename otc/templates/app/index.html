@@ -28,15 +28,15 @@
 
 {% block content %}
 {% if user.is_authenticated %}
+
 {% if messages %}
-<script>
-    {%
-        for message in messages %}
-    alert("{{ message }}");
-    {%
-        endfor %
-    }
-</script>
+{% for message in messages %}
+<br/>
+<div class="alert alert-primary" role="alert">
+    {{ message }}
+</div>
+{% endfor %}
+
 {% endif %}
 <br/>
 <div class="container">
@@ -62,11 +62,25 @@
             </form>
         </div>
     </div>
+
     <div class="row">
         <div class="col-sm">
-            {{ calendar }}
+            {{ platz_3 }}
         </div>
     </div>
+    <br/>
+    <div class="row">
+        <div class="col-sm">
+            {{ platz_2 }}
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-sm">
+            {{ platz_1 }}
+        </div>
+    </div>
+
 </div>
 {% else %}
 {% include "not_registered.html" %}

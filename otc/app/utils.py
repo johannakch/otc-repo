@@ -1,37 +1,40 @@
 from calendar import HTMLCalendar
 import datetime
-
+from datetime import timedelta
 from django.urls import reverse
-
 from app.models import Event
 
 
 class EventCalendar(HTMLCalendar):
-    def __init__(self, events=None):
+    def __init__(self, user, courtnumber):
         super(EventCalendar, self).__init__()
-        self.events = events
+        self.user = user
+        self.courtnumber = courtnumber
+        self.twohourgames = []
 
     def formatday(self, day, weekday, themonth, theyear, events, hour):
         """
         Return a day as a table cell.
         """
-        events_from_day = events.filter(day__day=day)
-        events_html = "<ul>"
+        type_color = '#ffc107'
+        events_from_day = events.filter(day__day=day, number=self.courtnumber)
+        events_html = ""
         for event in events_from_day:
-            events_html += event.get_absolute_url() + "<br>"
-        events_html += "</ul>"
+            type_color = get_type_color(event.type)
+            events_html += event.get_absolute_url(type_color) + "<br>"
+
+
+        # check if there is a two hour game
+        if events_html == '':
+            for ev in self.twohourgames:
+                if ev.start_time.hour == hour and ev.day.year == theyear and ev.day.month == themonth and ev.day.day == day and ev.number == self.courtnumber:
+                    type_color = get_type_color(ev.type)
+                    events_html += ev.get_absolute_url(type_color) + "<br>"
 
         if day == 0:
             return '<td class="noday">&nbsp;</td>'
         else:
-            # check if date to show is in the past
-            current_date = datetime.date(year=theyear, month=themonth, day=day)
-            if current_date < datetime.date.today() or (current_date == datetime.date.today() and hour <= datetime.datetime.now().time().hour):
-                return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
-            else:
-                url = reverse('add_event', args=(theyear, themonth, day, hour))
-                return '<td class="%s"><a href="%s">+</a>%s</td>' % (self.cssclasses[weekday], url, events_html)
-
+            return self.get_tablecell_content(theyear, themonth, day, hour, weekday, events_html, type_color)
 
     def formatweek(self, today, themonth, theyear):
         """
@@ -39,7 +42,6 @@ class EventCalendar(HTMLCalendar):
         """
         # startdate and enddate of current week
         start, end = week_magic(today)
-
 
         theweek = []
         for week in self.monthdatescalendar(theyear, themonth):
@@ -63,6 +65,15 @@ class EventCalendar(HTMLCalendar):
         a('\n')
         for i in range(8, 24):
             events = Event.objects.filter(day__lte=end).filter(day__gte=start).filter(start_time=str(i)+':00:00')
+            for event in events:
+                # checks if game is doppel AND two hours, because a Doppel can be also 1 hour
+                # create copy of two hour event (without saving it to db)
+                if game_is_doppel(event):
+                    new_time = (datetime.datetime(event.day.year, event.day.month, event.day.day) + timedelta(hours=i+1)).time()
+                    new_event = event
+                    new_event.start_time = new_time
+                    self.twohourgames.append(event)
+
             s = ''.join(self.formatday(d, wd, m, y, events, i) for (d, wd, m, y) in theweek)
             if i < 10:
                 a('<tr><th scope="row">0%s:00</th>%s</tr>' % (str(i), s))
@@ -72,14 +83,14 @@ class EventCalendar(HTMLCalendar):
         a('</table>')
         a('\n')
         table = ''.join(v)
-        print("TABLE:", table)
+        #print("TABLE:", table)
 
 
         table = table.replace('<td ', '<td  width="150" height="60"')
         table = table.replace('<th class="mon">Mon</th><th class="tue">Tue</th>'
                               '<th class="wed">Wed</th><th class="thu">Thu</th>'
                               '<th class="fri">Fri</th><th class="sat">Sat</th>'
-                              '<th class="sun">Sun</th>', '<td></td><th class="mon">Montag, '+str(theweek[0][0])+'</th>'
+                              '<th class="sun">Sun</th>', '<th></th><th class="mon">Montag, '+str(theweek[0][0])+'</th>'
                               '<th class="mon">Dienstag, '+str(theweek[1][0])+'</th><th class="mon">Mittwoch, '+str(theweek[2][0])+'</th>'
                               '<th class="mon">Donnerstag, '+str(theweek[3][0])+'</th><th class="mon">Freitag, '+str(theweek[4][0])+'</th>'
                               '<th class="mon">Samstag, '+str(theweek[5][0])+'</th><th class="mon">Sonntag, '+str(theweek[6][0])+'</th>')
@@ -87,13 +98,39 @@ class EventCalendar(HTMLCalendar):
 
 
     def formatmonthname(self, theyear, themonth, withyear=True):
-        year_dic =  get_year_dic()
-        monthname = '<tr><th colspan="8" scope="col" class="month">%s %d</th><//tr>' % (year_dic[themonth], theyear)
+        year_dic = get_year_dic()
+        monthname = '<tr><th colspan="8" scope="col" class="month">%s %d / Platznr. %d</th></tr>' % (year_dic[themonth], theyear, self.courtnumber)
 
         return monthname
 
+    def get_tablecell_content(self, theyear, themonth, day, hour, weekday, events_html, type_color):
+        # check if date to show is in the past
+        current_date = datetime.date(year=theyear, month=themonth, day=day)
+        admin_user = (self.user.is_superuser or self.user.is_staff) and (self.courtnumber == 3 or self.courtnumber == 2 or self.courtnumber == 1)
+        active_user = self.user.is_active and not self.user.is_staff and not self.user.is_superuser and self.courtnumber == 3
 
-
+        if is_time_in_path(hour, current_date):
+            if events_html == '':
+                return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
+            else:
+                return '<td class="%s" style="background-color: %s">%s</td>' % (self.cssclasses[weekday], type_color['type'], events_html)
+        else:
+            # if self.twohoursgame:
+            #     events_html += self.twohoursgame.get_absolute_url() + "<br>"
+            #     self.twohoursgame = None
+            url = reverse('add_event', args=(theyear, themonth, day, hour))
+            if admin_user:
+                if events_html == '':
+                    return '<td class="%s"><a href="%s">+</a></td>' % (self.cssclasses[weekday], url)
+                else:
+                    return '<td class="%s" style="background-color: %s">%s</td>' % (self.cssclasses[weekday], type_color['type'], events_html)
+            elif active_user:
+                if events_html == '':
+                    return '<td class="%s"><a href="%s">+</a></td>' % (self.cssclasses[weekday], url)
+                else:
+                    return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
+            else:
+                return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
 
 
 def get_year_dic():
@@ -116,3 +153,27 @@ def week_magic(day):
        end_of_week = day + to_end_of_week
 
        return (beginning_of_week, end_of_week)
+
+def game_is_doppel(event):
+    '''
+    Checks if duration is two hours instead of one
+    '''
+    if isinstance(event, Event):
+        if event.duration == 2:
+            return True
+    else:
+        print("is_doppel Methode nimmt nur ein Event (Typ: Event) als Parameter!")
+    return False
+
+def is_time_in_path(hour, current_date):
+    if current_date < datetime.date.today() or (
+            current_date == datetime.date.today() and hour <= datetime.datetime.now().time().hour):
+        return True
+    return False
+
+def get_type_color(event_type):
+    color_dict = {'Einzelspiel': {'type': '#D5F5E3', 'font': '#1D8348'}, 'Doppelspiel': {'type': '#D5F5E3', 'font': '#1D8348'}, 'Training': {'type': '#EBF5FB', 'font': '#2874A6'},
+                  'Turnier': {'type': '#EBDEF0', 'font': '#6C3483'}, 'Event': {'type': '#FAD7A0', 'font': '#B9770E'}, 'Arbeitseinsatz': {'type': '#FCF3CF', 'font': '#B7950B'},
+                  'Medenrunde': {'type': '#FADBD8', 'font': '#B03A2E'}}
+    return color_dict[event_type]
+
