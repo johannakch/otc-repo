@@ -1,30 +1,32 @@
 import datetime
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-
-
-# Create your views here.
 from app.forms import EventForm
 from app.utils import EventCalendar, get_year_dic, hasReservationRight
 from app.models import Event, GameTypeChoice
 
+
 from django.contrib import messages
 
 def index(request):
-    #print("REQUEST:",request.GET)
     context = {}
     today = datetime.date.today()
-    cal = create_base_calendar(today)
-    context['calendar'] = mark_safe(cal)
+    platz_1 = create_base_calendar(request, today, 1)
+    platz_2 = create_base_calendar(request, today, 2)
+    platz_3 = create_base_calendar(request, today, 3)
+
+    context.update({
+        'platz_3': mark_safe(platz_3),
+        'platz_2': mark_safe(platz_2),
+        'platz_1': mark_safe(platz_1),
+    })
 
     return render(request, 'app/index.html', context)
 
-def create_base_calendar(today):
-    cal = EventCalendar().formatweek(today, today.month, today.year)
+def create_base_calendar(request, today, courtnumber):
+    cal = EventCalendar(request, courtnumber).formatweek(today, today.month, today.year)
     return cal
 
 def add_event(request, year, month, day, hour):
@@ -70,7 +72,7 @@ def add_event(request, year, month, day, hour):
            context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1}, is_basic_user=iba, year=year, month=month, day=day, type='einzel')
        else:
            print("Error: No Reservationright")
-           messages.info(request, 'Du hast in dieser Woche kein Recht mehr weitere Reservierungen vorzunehme.')
+           messages.info(request, 'Du hast in dieser Woche kein Recht mehr weitere Reservierungen vorzunehmen!')
            return HttpResponseRedirect(reverse('index'))
    print(context['form'])
 
@@ -91,12 +93,13 @@ def show_event(request, id):
     if (event.creator == request.user or len(Event.objects.filter(players__id=request.user.id))>0):
         context['is_basic_user'] = iba
         #context['form'] = EventForm(is_basic_user=iba, instance=event)
-        context['form'] = EventForm(is_basic_user=iba, instance=event, year=event.year, month=event.month, day=event.day)
+        context['form'] = EventForm(is_basic_user=iba, instance=event, year=2019, month=3, day=3)
         return render(request, 'app/add_event.html', context)
     else:
         players_list = [player.get_full_name() for player in event.players.all() if event.players.all()]
         context['players'] = players_list
 
         context['event'] = event
+
 
         return render(request, 'app/show_event.html', context)

@@ -51,8 +51,7 @@ class Event(models.Model):
 
     def get_absolute_url(self):
         url = reverse('show_event', args=[self.id])
-        print(self.players.all())
-        return u'<a href="%s">%s</a>' % (url, self.type + ': ' +', '.join([p.first_name+' '+p.last_name for p in self.players.all()]))
+        return u'<a href="%s">%s</a>' % (url, self.title + ': ' +', '.join([p.get_full_name() for p in self.players.all()]))
 
     def clean(self):
         events = Event.objects.filter(day=self.day)

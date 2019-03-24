@@ -7,31 +7,49 @@ from app.models import Event
 
 
 class EventCalendar(HTMLCalendar):
-    def __init__(self, events=None):
+    def __init__(self, request, courtnumber):
         super(EventCalendar, self).__init__()
-        self.events = events
+        self.request = request
+        self.courtnumber = courtnumber
 
     def formatday(self, day, weekday, themonth, theyear, events, hour):
         """
         Return a day as a table cell.
         """
-        events_from_day = events.filter(day__day=day)
-        events_html = "<ul>"
+        events_from_day = events.filter(day__day=day, number=self.courtnumber)
+        events_html = ""
         for event in events_from_day:
             events_html += event.get_absolute_url() + "<br>"
-        events_html += "</ul>"
 
         if day == 0:
             return '<td class="noday">&nbsp;</td>'
         else:
             # check if date to show is in the past
             current_date = datetime.date(year=theyear, month=themonth, day=day)
-            if current_date < datetime.date.today() or (current_date == datetime.date.today() and hour <= datetime.datetime.now().time().hour):
-                return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
-            else:
-                url = reverse('add_event', args=(theyear, themonth, day, hour))
-                return '<td class="%s"><a href="%s">+</a>%s</td>' % (self.cssclasses[weekday], url, events_html)
 
+            if self.request.user.is_active and not self.request.user.is_staff and not self.request.user.is_superuser and self.courtnumber == 3:
+                if current_date < datetime.date.today() or (
+                        current_date == datetime.date.today() and hour <= datetime.datetime.now().time().hour):
+                    return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
+                else:
+                    if events_html == '':
+                        url = reverse('add_event', args=(theyear, themonth, day, hour))
+                        return '<td class="%s"><a href="%s">+</a></td>' % (self.cssclasses[weekday], url)
+                    else:
+                        return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
+            elif (self.request.user.is_superuser or self.request.user.is_staff) and (
+                        self.courtnumber == 3 or self.courtnumber == 2 or self.courtnumber == 1):
+                if current_date < datetime.date.today() or (
+                        current_date == datetime.date.today() and hour <= datetime.datetime.now().time().hour):
+                    return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
+                else:
+                    if events_html == '':
+                        url = reverse('add_event', args=(theyear, themonth, day, hour))
+                        return '<td class="%s"><a href="%s">+</a></td>' % (self.cssclasses[weekday], url)
+                    else:
+                        return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
+            else:
+                return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
 
     def formatweek(self, today, themonth, theyear):
         """
@@ -87,13 +105,10 @@ class EventCalendar(HTMLCalendar):
 
 
     def formatmonthname(self, theyear, themonth, withyear=True):
-        year_dic =  get_year_dic()
-        monthname = '<tr><th colspan="8" scope="col" class="month">%s %d</th><//tr>' % (year_dic[themonth], theyear)
+        year_dic = get_year_dic()
+        monthname = '<tr><th colspan="8" scope="col" class="month">%s %d / Platznr. %d</th></tr>' % (year_dic[themonth], theyear, self.courtnumber)
 
         return monthname
-
-
-
 
 
 def get_year_dic():
