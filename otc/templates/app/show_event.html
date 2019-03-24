@@ -95,6 +95,15 @@
             <p>Notizen: {% if event.notes %}{{ event.notes }}{% else %} / {% endif %}</p>
         </div>
     </div>
+     <div class="row">
+        <div class="col-sm">
+                {% if is_member_of_event %}
+            <form>
+                <button name="delete" value="{{event.id}}" type="submit" class="save btn btn-danger">löschen</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
 {% else %}

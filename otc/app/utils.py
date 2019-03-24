@@ -2,6 +2,7 @@ from calendar import HTMLCalendar
 import datetime
 from datetime import timedelta
 from django.urls import reverse
+from django.db.models import Q
 from app.models import Event
 
 
@@ -140,8 +141,8 @@ def get_year_dic():
 def hasReservationRight(user, theyear, themonth, day):
     start, end = week_magic(datetime.date(year=theyear, month=themonth, day=day))
     weeklyevents = Event.objects.filter(day__range=[start, end])
-    usersevents = weeklyevents.filter(creator=user)
-    usersevents2 = weeklyevents.filter(players__id=user.id)
+    usersevents = weeklyevents.filter(creator=user).filter(Q(type='Einzelspiel') or Q(type='Doppelspiel'))
+    usersevents2 = weeklyevents.filter(players__id=user.id).filter(Q(type='Einzelspiel') or Q(type='Doppelspiel'))
     return (not(len(usersevents)>0) and not(len(usersevents2)>0))
 
 def week_magic(day):

@@ -75,7 +75,7 @@ def add_event(request, year, month, day, hour):
            print("Error: No Reservationright")
            messages.info(request, 'Du hast in dieser Woche kein Recht mehr weitere Reservierungen vorzunehmen!')
            return HttpResponseRedirect(reverse('index'))
-   print(context['form'])
+   #print(context['form'])
    return render(request, 'app/add_event.html', context)
 
 
@@ -83,23 +83,23 @@ def format_date(day, month, year):
     year_dic = get_year_dic()
     return '{}. {} {}'.format(day, year_dic[int(month)], year)
 
-# TODO: eventuell nur löschen statt edit für user die an der reservierung teilnehmen
+# TODO: email benachrichtigung bei delete
 def show_event(request, id):
+    if 'delete' in request.GET:
+        id = int(request.GET.get('delete'))
+        print('deletet event:'+str(request.GET.get('delete')))
+        Event.objects.filter(id=id).delete()
+        return HttpResponseRedirect(reverse('index'))
     context = {}
     iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
     context['id'] = id
     event = Event.objects.get(id=id)
-    # wenn aktueller user creator oder einer der players ist -> bearbeitbares form anzeigen
+    players_list = [player.get_full_name() for player in event.players.all() if event.players.all()]
+    context['players'] = players_list
+    context['event'] = event
+    # wenn aktueller user creator oder einer der players ist -> löschen anzeigen
     if (event.creator == request.user or len(Event.objects.filter(players__id=request.user.id))>0):
-        context['is_basic_user'] = iba
-        #context['form'] = EventForm(is_basic_user=iba, instance=event)
-        context['form'] = EventForm(is_basic_user=iba, instance=event, year=2019, month=3, day=3)
-        return render(request, 'app/add_event.html', context)
+        context['is_member_of_event'] = True
     else:
-        players_list = [player.get_full_name() for player in event.players.all() if event.players.all()]
-        context['players'] = players_list
-
-        context['event'] = event
-
-
-        return render(request, 'app/show_event.html', context)
+        context['is_member_of_event'] = False
+    return render(request, 'app/show_event.html', context)
