@@ -18,21 +18,21 @@
 
     <form method="post" novalidate>
         {% csrf_token %}
-       <!-- Show two Buttons for single and double game. They configure the form fields -->
-       <input type="hidden" name="einzel-selected" value="{{einzel}}">
-       {% if is_basic_user %}
-           {% if einzel %}
-          <input type="submit" disabled="true" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
-               <input type="submit" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
-           {% else %}
-               <input type="submit" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
-               <input type="submit" disabled="true" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
-           {% endif %}
-       {% else %}  <!-- Falls ein Admin angemeldet ist -> ganz normal alle types als dropdown -->
-       <div class="col-6">
-           {{ form.type|as_crispy_field }}
-       </div>
-       {% endif %}
+        <!-- Show two Buttons for single and double game. They configure the form fields -->
+        <input type="hidden" name="einzel-selected" value="{{einzel}}">
+        {% if is_basic_user %}
+        {% if einzel %}
+        <input type="submit" disabled="true" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
+        <input type="submit" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
+        {% else %}
+        <input type="submit" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
+        <input type="submit" disabled="true" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
+        {% endif %}
+        {% else %}  <!-- Falls ein Admin angemeldet ist -> ganz normal alle types als dropdown -->
+        <div class="col-6">
+            {{ form.type|as_crispy_field }}
+        </div>
+        {% endif %}
         <div class="row">
             <div class="col-6">
                 {{ form.start_time|as_crispy_field }}
@@ -40,17 +40,17 @@
             <div class="col-6">
                 {{ form.duration|as_crispy_field }}
             </div>
-           {% if is_basic_user %}
-               <div class="col-6">
-                    Falls normaler User angemeldet ist -> feste platznummer
-                   Tennisplatznummer: 3
-               </div>
-           {% else %}
-                Falls Admin angemeldet ist -> Platz wählen
-               <div class="col-6">
-                   {{ form.number|as_crispy_field }}
-               </div>
-           {% endif %}
+            {% if is_basic_user %}
+            <div class="col-6">
+                Falls normaler User angemeldet ist -> feste platznummer
+                Tennisplatznummer: 3
+            </div>
+            {% else %}
+            Falls Admin angemeldet ist -> Platz wählen
+            <div class="col-6">
+                {{ form.number|as_crispy_field }}
+            </div>
+            {% endif %}
         </div>
         <div class="row">
             <div class="col-6">
@@ -62,26 +62,29 @@
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         {% for item in form.players %}
-
+                       <!-- {% if item.value.get_username == 'viviane' %} TODO: compare wither {{user }} value wich is name of act user-->
                         <div class="dropdown-item">{{ item }}</div>
-
+                       <!-- {% endif %} -->
                         {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-             <div class="col-4">
-               {{ form.externPlayer1|as_crispy_field }}
-           </div>
+            {% for item in form.players %}
+            {{ item.value.get_username }}
+            {% endfor %}
+            <div class="col-4">
+                {{ form.externPlayer1|as_crispy_field }}
+            </div>
             {% if not einzel %}
-           <div class="col-4">
-               {{ form.externPlayer2|as_crispy_field }}
-           </div>
-           <div class="col-4">
-               {{ form.externPlayer3|as_crispy_field }}
-           </div>
-           {% endif %}
+            <div class="col-4">
+                {{ form.externPlayer2|as_crispy_field }}
+            </div>
+            <div class="col-4">
+                {{ form.externPlayer3|as_crispy_field }}
+            </div>
+            {% endif %}
         </div>
         <div class="row">
             <div class="col-6">

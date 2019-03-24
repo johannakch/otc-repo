@@ -17,6 +17,7 @@ class GameTypeChoice(Enum):   # A subclass of Enum
     ev = "Event"
     ab = "Arbeitseinsatz"
     mr = "Medenrunde"
+    trn = "Training"
 
 class Event(models.Model):
     creator = models.ForeignKey(User, related_name='creator', null=True)

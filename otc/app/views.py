@@ -33,6 +33,7 @@ def add_event(request, year, month, day, hour):
    iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
    # boolean der form und html verändert, je nachdem ob es ein basic user oder ein staff/superuser ist
    context['is_basic_user'] = iba
+   context['user'] = str(request.user)
    einzel = None # wert der sich merkt ob einzel oder doppelbutton oben im form gewählt wurde
    time_value = datetime.time(int(hour), 00)
    context[einzel] = True
@@ -67,13 +68,12 @@ def add_event(request, year, month, day, hour):
            # TODO: Aussagekräftige Fehlermeldungens
    else:
        if (hasReservationRight(request.user, int(year), int(month), int(day))):
-           context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1}, is_basic_user=iba, year=year, month=month, day=day, type='einzel')
+            context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1}, is_basic_user=iba, year=year, month=month, day=day, type='einzel')
        else:
            print("Error: No Reservationright")
            messages.info(request, 'Du hast in dieser Woche kein Recht mehr weitere Reservierungen vorzunehme.')
            return HttpResponseRedirect(reverse('index'))
    print(context['form'])
-
    return render(request, 'app/add_event.html', context)
 
 
