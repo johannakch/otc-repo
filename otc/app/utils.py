@@ -113,7 +113,7 @@ class EventCalendar(HTMLCalendar):
             if events_html == '':
                 return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
             else:
-                return '<td class="%s" style="background-color: %s">%s</td>' % (self.cssclasses[weekday], type_color['type'], events_html)
+                return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 15px 15px">%s</td>' % (self.cssclasses[weekday], type_color['type'], events_html)
         else:
             # if self.twohoursgame:
             #     events_html += self.twohoursgame.get_absolute_url() + "<br>"
@@ -121,12 +121,12 @@ class EventCalendar(HTMLCalendar):
             url = reverse('add_event', args=(theyear, themonth, day, hour))
             if admin_user:
                 if events_html == '':
-                    return '<td class="%s"><a href="%s">+</a></td>' % (self.cssclasses[weekday], url)
+                    return '<td class="%s"><a href="%s" style="color: #2C3E50">+</a></td>' % (self.cssclasses[weekday], url)
                 else:
-                    return '<td class="%s" style="background-color: %s">%s</td>' % (self.cssclasses[weekday], type_color['type'], events_html)
+                    return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 15px 15px">%s</td>' % (self.cssclasses[weekday], type_color['type'], events_html)
             elif active_user:
                 if events_html == '':
-                    return '<td class="%s"><a href="%s">+</a></td>' % (self.cssclasses[weekday], url)
+                    return '<td class="%s"><a href="%s" style="color: #2C3E50">+</a></td>' % (self.cssclasses[weekday], url)
                 else:
                     return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
             else:
