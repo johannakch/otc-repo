@@ -42,11 +42,11 @@
             </div>
             {% if is_basic_user %}
             <div class="col-6">
-                Falls normaler User angemeldet ist -> feste platznummer
+               <!-- Falls normaler User angemeldet ist -> feste platznummer-->
                 Tennisplatznummer: 3
             </div>
             {% else %}
-            Falls Admin angemeldet ist -> Platz wählen
+                 <!--  Falls Admin angemeldet ist -> Platz wählen -->
             <div class="col-6">
                 {{ form.number|as_crispy_field }}
             </div>
@@ -61,19 +61,15 @@
                             data-toggle="dropdown">{{ form.players.label }}*
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                         <!-- {% if item.value.get_username == 'viviane' %} TODO: compare wither {{user }} value wich is name of act user {% endif %}-->
                         {% for item in form.players %}
-                       <!-- {% if item.value.get_username == 'viviane' %} TODO: compare wither {{user }} value wich is name of act user-->
                         <div class="dropdown-item">{{ item }}</div>
-                       <!-- {% endif %} -->
                         {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            {% for item in form.players %}
-            {{ item.value.get_username }}
-            {% endfor %}
             <div class="col-4">
                 {{ form.externPlayer1|as_crispy_field }}
             </div>
