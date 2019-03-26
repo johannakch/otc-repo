@@ -23,7 +23,7 @@ class Event(models.Model):
     creator = models.ForeignKey(User, related_name='creator', null=True)
     day = models.DateField(u'Datum', help_text=u'Tag der Reservierung')
     start_time = models.TimeField(u'Startzeit', help_text=u'Beginn der Reservierung')
-    duration = models.PositiveSmallIntegerField(u'Dauer', help_text=u'Stundenanzahl', default=1, validators=[MaxValueValidator(12), MinValueValidator(1)])
+    duration = models.PositiveSmallIntegerField(u'Dauer', help_text=u'Stundenanzahl')
     notes = models.TextField(u'Notizen', help_text=u'Beschreibung/Zusätzliche Infos', blank=True, null=True)
     title = models.CharField(u'Titel', max_length=200, help_text=u'Titel des Spiels')
     type = models.CharField(u'Einzel/Doppel', max_length=200, choices=[(tag.value, tag.value) for tag in GameTypeChoice], help_text=u'Art des Trainings', blank=True) #type=GameTypeChoice.trn_dpl

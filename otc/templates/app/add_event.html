@@ -14,6 +14,9 @@
         <div class="col-1">
             <a href="{% url 'index' %}">zurück</a>
         </div>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'show_depts' %}">Meine Reservierungen</a>
+        </li>
     </div>
 
     <form method="post" novalidate>
@@ -23,9 +26,9 @@
         {% if is_basic_user %}
         {% if einzel %}
         <input type="submit" disabled="true" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
-        <input type="submit" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
+        <input type="submit" name="doppel" value="Doppelspiel" class="btn btn-secondary"/>
         {% else %}
-        <input type="submit" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
+        <input type="submit" name="einzel" value="Einzelspiel" class="btn btn-secondary"/>
         <input type="submit" disabled="true" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
         {% endif %}
         {% else %}  <!-- Falls ein Admin angemeldet ist -> ganz normal alle types als dropdown -->
@@ -42,11 +45,11 @@
             </div>
             {% if is_basic_user %}
             <div class="col-6">
-               <!-- Falls normaler User angemeldet ist -> feste platznummer-->
+                <!-- Falls normaler User angemeldet ist -> feste platznummer-->
                 Tennisplatznummer: 3
             </div>
             {% else %}
-                 <!--  Falls Admin angemeldet ist -> Platz wählen -->
+            <!--  Falls Admin angemeldet ist -> Platz wählen -->
             <div class="col-6">
                 {{ form.number|as_crispy_field }}
             </div>
@@ -61,13 +64,16 @@
                             data-toggle="dropdown">{{ form.players.label }}*
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                         <!-- {% if item.value.get_username == 'viviane' %} TODO: compare wither {{user }} value wich is name of act user {% endif %}-->
+                        <!-- {% if item.value.get_username == 'viviane' %} TODO: compare wither {{user }} value wich is name of act user {% endif %}-->
                         {% for item in form.players %}
                         <div class="dropdown-item">{{ item }}</div>
                         {% endfor %}
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
+            {{ form.errors.players }}
         </div>
         <div class="row">
             <div class="col-4">
