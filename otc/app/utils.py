@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.urls import reverse
 from django.db.models import Q
 from app.models import Event
+from copy import deepcopy
 
 
 class EventCalendar(HTMLCalendar):
@@ -11,12 +12,13 @@ class EventCalendar(HTMLCalendar):
         super(EventCalendar, self).__init__()
         self.user = user
         self.courtnumber = courtnumber
-        self.twohourgames = []
+        self.morethanonehour = []
 
     def formatday(self, day, weekday, themonth, theyear, events, hour):
         """
         Return a day as a table cell.
         """
+        # default type-color
         type_color = '#ffc107'
         events_from_day = events.filter(day__day=day, number=self.courtnumber)
         events_html = ""
@@ -26,7 +28,7 @@ class EventCalendar(HTMLCalendar):
 
         # check if there is a two hour game
         if events_html == '':
-            for ev in self.twohourgames:
+            for ev in self.morethanonehour:
                 if ev.start_time.hour == hour and ev.day.year == theyear and ev.day.month == themonth and ev.day.day == day and ev.number == self.courtnumber:
                     type_color = get_type_color(ev.type)
                     events_html += ev.get_absolute_url(type_color) + "<br>"
@@ -68,12 +70,15 @@ class EventCalendar(HTMLCalendar):
             for event in events:
                 # checks if game is doppel AND two hours, because a Doppel can be also 1 hour
                 # create copy of two hour event (without saving it to db)
-                if game_is_doppel(event):
-                    new_time = (datetime.datetime(event.day.year, event.day.month, event.day.day) + timedelta(
-                        hours=i + 1)).time()
-                    new_event = event
-                    new_event.start_time = new_time
-                    self.twohourgames.append(event)
+                if event.duration > 1:
+                    for h in range(1, event.duration):
+                        new_time = (datetime.datetime(event.day.year, event.day.month, event.day.day) + timedelta(
+                            hours=i + h)).time()
+                        new_event = deepcopy(event)
+                        print(type(new_event))
+                        new_event.start_time = new_time
+                        print(new_event, new_event.start_time)
+                        self.morethanonehour.append(new_event)
 
             s = ''.join(self.formatday(d, wd, m, y, events, i) for (d, wd, m, y) in theweek)
             if i < 10:
@@ -137,7 +142,8 @@ class EventCalendar(HTMLCalendar):
                     return '<td class="%s"><a href="%s" style="color: #2C3E50">+</a></td>' % (
                         self.cssclasses[weekday], url)
                 else:
-                    return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
+                    return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 15px 15px">%s</td>' % (
+                           self.cssclasses[weekday], type_color['type'], events_html)
             else:
                 return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
 
@@ -167,16 +173,11 @@ def week_magic(day):
     return (beginning_of_week, end_of_week)
 
 
-def game_is_doppel(event):
+def get_hours(event):
     '''
-    Checks if duration is two hours instead of one
+    Returns count of hours greater than 1 of an event
     '''
-    if isinstance(event, Event):
-        if event.duration == 2:
-            return True
-    else:
-        print("is_doppel Methode nimmt nur ein Event (Typ: Event) als Parameter!")
-    return False
+    return event.duration
 
 
 def is_time_in_path(hour, current_date):

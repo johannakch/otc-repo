@@ -62,18 +62,18 @@ def add_event(request, year, month, day, hour):
             new_event_form = EventForm(updated_request, is_basic_user=iba, year=year, month=month, day=day,
                                        type='einzel')
             context['form'] = new_event_form
-            # TODO: Wenn kein Mitspieler ausgewählt wird ist es doch auch ok oder? Warum rewuired? -> Marius fragen
+            # TODO: Wenn kein Mitspieler ausgewählt wird ist es doch auch ok oder? Warum required? -> Marius fragen
             if new_event_form.is_valid():
                 new_event = new_event_form.save(commit=False)
                 new_event.creator = request.user
                 if iba:  # Für basic user immer Platznummer 3
                     new_event.number = 3
+                    new_event.title = "Reserviert für"
                     # type setzen aus vorheriger buttonauswahl
                     if request.POST.get("einzel-selected", None):
                         new_event.type = "Einzelspiel"
                     else:
                         new_event.type = "Doppelspiel"
-                new_event.title = "Reserviert für"
                 new_event.day = datetime.date(year=int(year), month=int(month), day=int(day))
                 new_event.save()
                 new_event_form.save_m2m()

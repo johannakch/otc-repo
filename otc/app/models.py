@@ -26,8 +26,8 @@ class Event(models.Model):
     duration = models.PositiveSmallIntegerField(u'Dauer', help_text=u'Stundenanzahl')
     notes = models.TextField(u'Notizen', help_text=u'Beschreibung/Zusätzliche Infos', blank=True, null=True)
     title = models.CharField(u'Titel', max_length=200, help_text=u'Titel des Spiels')
-    type = models.CharField(u'Einzel/Doppel', max_length=200, choices=[(tag.value, tag.value) for tag in GameTypeChoice], help_text=u'Art des Trainings', blank=True) #type=GameTypeChoice.trn_dpl
-    players = models.ManyToManyField(User, related_name='otherplayers', verbose_name=u'Spieler', blank=True, help_text=u'Wähle dich und deine/n Mitspieler aus')
+    type = models.CharField(u'Event-Typ', max_length=200, choices=[(tag.value, tag.value) for tag in GameTypeChoice], help_text=u'Art des Trainings') #type=GameTypeChoice.trn_dpl
+    players = models.ManyToManyField(User, related_name='otherplayers', verbose_name=u'Spieler', blank=True, help_text=u'Wähle deine/n Mitspieler aus')
     number = models.PositiveSmallIntegerField(u'Platznummer', default=3, validators=[MaxValueValidator(3), MinValueValidator(1)], help_text=u'Nummer des Tennisplatzes', blank=True) #set min 1 max 3 default 3
     externPlayer1 = models.CharField(u'Externer 1', max_length=200, help_text='Name des ersten externen Mitspielers (falls vorhanden)', blank=True)
     externPlayer2 = models.CharField(u'Externer 2', max_length=200, help_text='Name des zweiten externen Mitspielers (falls vorhanden)', blank=True)
@@ -52,7 +52,7 @@ class Event(models.Model):
 
     def get_absolute_url(self, type_color):
         url = reverse('show_event', args=[self.id])
-        return u'<a href="%s" style="color: %s">%s</a>' % (url, type_color['font'],self.title + ': ' +', '.join([p.get_full_name() for p in self.players.all()]))
+        return u'<a href="%s" style="color: %s">%s</a>' % (url, type_color['font'], self.title + ': ' +', '.join([p.get_full_name() for p in self.players.all()]))
 
     def clean(self):
         events = Event.objects.filter(day=self.day)

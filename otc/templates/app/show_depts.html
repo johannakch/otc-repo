@@ -30,53 +30,51 @@
 {% block content %}
 {% if user.is_authenticated %}
 <br/>
-<tr class="container">
-    <table>
-        {% for event in events %}
-        <tr>
-            <td>
-                Reservierung
-                <small class="text-muted">{{ event.day }}</small>
-            </td>
-
-            <td>
-                - {{ event.title }} -
-            </td>
-            <td>Spieler:
-                {% if players %}
-                {% for p in players %}
-                {{ p }}
-                {% endfor %}
-                {% endif %}
-            </td>
-            <td>
-                <p>Typ: {{ event.type }}</p>
-            </td>
-            <td>
-                <p>Beginn: {{ event.start_time }} Uhr</p>
-            </td>
-            <td>
-                <p>Dauer: {{ event.duration }} Stunde/n</p>
-            </td>
-            <td>
-                <p>Platznummer: {{ event.number }}</p>
-            </td>
-            <td>Externe: {% if event.externPlayer1 %}{{ event.externPlayer1 }}{% endif %}
-                {% if event.externPlayer2 %}{{ event.externPlayer2 }}{% endif %}
-                {% if event.externPlayer3 %}{{ event.externPlayer3 }}{% endif %}
-                {% if not event.externPlayer1 and not event.externPlayer2 and not event.externPlayer3 %}
-                / {% endif %}
-            </td>
-            <td>
-                <p>Notizen: {% if event.notes %}{{ event.notes }}{% else %} / {% endif %}</p>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <div class="alert alert-secondary" role="alert">Bisher {{ exts }} Externe Spieler, also 6€ x {{exts}} = {{sum}}€
+                (vorraussichtlich am Ende der Saison zu bezahlen)
+            </div>
+        </div>
     </div>
-    <p style="font-weight: 700;"> Bisher {{ exts }} Externe Spieler, also 5€ x {{exts}} = {{sum}}€ (vorraussichtlich am Ende der Saison zu bezahlen)</p>
-    {% else %}
-    {% include "not_registered.html" %}
+    {% for event in events %}
+    <div class="row">
+        <div class="col-sm-2">
+            {{ event.day }}
+        </div>
+        <div class="col-sm-2">
+            {{ event.title }}
+        </div>
+        <div class="col-sm-2">
+            {% for p in event.players.all %}
+            {{ p.get_full_name }}
+            {% endfor %}
+        </div>
+        <div class="col-sm-2">
+            {{ event.type }}
+        </div>
+        <div class="col-sm-1">
+            {{ event.start_time }} Uhr
+        </div>
+        <div class="col-sm-1">
+            {{ event.duration }} Std
+        </div>
+        <div class="col-sm-1">
+            {{ event.number }}
+        </div>
+        <div class="col-sm-1">
+            {% if event.externPlayer1 %}{{ event.externPlayer1 }}{% endif %}
+            {% if event.externPlayer2 %}{{ event.externPlayer2 }}{% endif %}
+            {% if event.externPlayer3 %}{{ event.externPlayer3 }}{% endif %}
+            {% if not event.externPlayer1 and not event.externPlayer2 and not event.externPlayer3 %}
+            / {% endif %}
+        </div>
+    </div>
+    {% endfor %}
 
-    {% endif %}
-    {% endblock %}
+{% else %}
+{% include "not_registered.html" %}
+{% endif %}
+</div>
+{% endblock %}

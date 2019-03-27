@@ -6,62 +6,89 @@
 <div class="container">
     <br/>
     <div class="row">
-        <div class="col-11">
+        <div class="col-auto mr-auto">
             <h2>Neue Reservierung {% if is_basic_user %} auf Platz 3 {% endif %}
                 <small class="text-muted">am {{ date }}</small>
             </h2>
         </div>
-        <div class="col-1">
-            <a href="{% url 'index' %}">zurück</a>
+        <div class="col-auto">
+            <a href="{% url 'index' %}" class="btn btn-secondary active" data-toggle="tooltip"
+               data-placement="right" role="button" aria-pressed="true">zurück</a>
         </div>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'show_depts' %}">Meine Reservierungen</a>
-        </li>
     </div>
 
+    <hr/>
+    <br/>
     <form method="post" novalidate>
         {% csrf_token %}
-        <!-- Show two Buttons for single and double game. They configure the form fields -->
-        <input type="hidden" name="einzel-selected" value="{{einzel}}">
-        {% if is_basic_user %}
-        {% if einzel %}
-        <input type="submit" disabled="true" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
-        <input type="submit" name="doppel" value="Doppelspiel" class="btn btn-secondary"/>
-        {% else %}
-        <input type="submit" name="einzel" value="Einzelspiel" class="btn btn-secondary"/>
-        <input type="submit" disabled="true" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
+        {% if not is_basic_user %}
+        <div class="row">
+            <div class="col-sm">
+                {{ form.title|as_crispy_field }}
+            </div>
+            <div class="col-sm">
+                {{ form.type|as_crispy_field }}
+            </div>
+        </div>
         {% endif %}
-        {% else %}  <!-- Falls ein Admin angemeldet ist -> ganz normal alle types als dropdown -->
-        <div class="col-6">
-            {{ form.type|as_crispy_field }}
+        {% if is_basic_user %}
+        <div class="row">
+            <div class="col-sm">
+                <p style="line-height: 40%">Spiel-Typ*</p>
+            </div>
         </div>
         {% endif %}
         <div class="row">
-            <div class="col-6">
+            <div class="col-sm">
+                <!-- Show two Buttons for single and double game. They configure the form fields -->
+                <input type="hidden" name="einzel-selected" value="{{einzel}}">
+                {% if is_basic_user %}
+                {% if einzel %}
+                <input type="submit" disabled="true" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
+                <input type="submit" name="doppel" value="Doppelspiel" class="btn btn-secondary"/>
+                {% else %}
+                <input type="submit" name="einzel" value="Einzelspiel" class="btn btn-secondary"/>
+                <input type="submit" disabled="true" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        <br/>
+        <div class="row">
+            <div class="col-sm">
                 {{ form.start_time|as_crispy_field }}
             </div>
-            <div class="col-6">
+            <div class="col-sm">
                 {{ form.duration|as_crispy_field }}
             </div>
-            {% if is_basic_user %}
-            <div class="col-6">
-                <!-- Falls normaler User angemeldet ist -> feste platznummer-->
-                Tennisplatznummer: 3
-            </div>
-            {% else %}
-            <!--  Falls Admin angemeldet ist -> Platz wählen -->
-            <div class="col-6">
+            {% if not is_basic_user %}
+            <div class="col-sm">
+                <!--  Falls Admin angemeldet ist -> Platz wählen -->
                 {{ form.number|as_crispy_field }}
+                <br/>
             </div>
             {% endif %}
         </div>
+        {% if form.errors.players %}
         <div class="row">
-            <div class="col-6">
+            <div class="col-sm">
+                <div class="alert alert-danger" role="alert">
+                    {% for error in form.errors.players %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <br/>
+        {% endif %}
+        <div class="row">
+            <div class="col-sm">
                 <div class="dropdown">
-
+                    <p style="line-height: 40%">Spieler*</p>
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
                             aria-haspopup="true" aria-expanded="false"
-                            data-toggle="dropdown">{{ form.players.label }}*
+                            data-toggle="dropdown">auswählen
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <!-- {% if item.value.get_username == 'viviane' %} TODO: compare wither {{user }} value wich is name of act user {% endif %}-->
@@ -72,32 +99,35 @@
                 </div>
             </div>
         </div>
+        <br/>
         <div class="row">
-            {{ form.errors.players }}
-        </div>
-        <div class="row">
-            <div class="col-4">
+            <div class="col-sm">
                 {{ form.externPlayer1|as_crispy_field }}
             </div>
             {% if not einzel %}
-            <div class="col-4">
+            <div class="col-sm">
                 {{ form.externPlayer2|as_crispy_field }}
             </div>
-            <div class="col-4">
+            <div class="col-sm">
                 {{ form.externPlayer3|as_crispy_field }}
             </div>
             {% endif %}
         </div>
         <div class="row">
-            <div class="col-6">
+            <div class="col-sm">
                 {{ form.notes|as_crispy_field }}
             </div>
 
             <br/>
         </div>
-
-        <button type="submit" class="save btn btn-success">speichern</button>
-        <a href="{% url 'index' %}" class="btn btn-secondary active" role="button" aria-pressed="true">abbrechen</a>
+        <div class="row">
+            <div class="col-sm">
+                <button type="submit" class="save btn btn-success">speichern</button>
+                <a href="{% url 'index' %}" class="btn btn-secondary active" role="button"
+                   aria-pressed="true">abbrechen</a>
+            </div>
+        </div>
     </form>
+    <br/>
 </div>
 {% endblock %}

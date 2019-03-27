@@ -23,7 +23,7 @@ class EventForm(forms.ModelForm):
         events = Event.objects.filter(day=datetime.date(year=int(y), month=int(m), day=int(d)))
         eventTimes = [int(x.start_time.strftime("%H")) for x in events]
 
-        self.fields['start_time'].widget.choices = [(datetime.time(hour=x), '{:02d}:00'.format(x)) for x in range(9, 24)
+        self.fields['start_time'].widget.choices = [(datetime.time(hour=x), '{:02d}:00'.format(x)) for x in range(8, 24)
                                                     if x not in eventTimes]
         if is_basic_user:
             self.fields['type'].choices = [(tag.value, tag.value) for tag in GameTypeChoice if
@@ -37,12 +37,12 @@ class EventForm(forms.ModelForm):
         else:
             self.fields['type'].choices = [(tag.value, tag.value) for tag in GameTypeChoice]
             self.fields['duration'] = forms.IntegerField(min_value=1,max_value=16)
-            self.fields['type'].initial = 'Doppelspiel'
+            self.fields['type'].initial = 'Einzelspiel'
 
     class Meta:
         model = Event
         fields = (
-            'type', 'start_time', 'players', 'duration', 'externPlayer1', 'externPlayer2', 'externPlayer3', 'number', 'notes')
+            'title', 'type', 'start_time', 'players', 'duration', 'externPlayer1', 'externPlayer2', 'externPlayer3', 'number', 'notes')
         widgets = {'start_time': forms.Select(choices=HOUR_CHOICES)}
 
     def clean(self):
@@ -51,9 +51,9 @@ class EventForm(forms.ModelForm):
             #print('Playerscount: '+str(len(cleaned_data.get('players'))))
             if cleaned_data.get('type')=='Einzelspiel':
                 if (len(cleaned_data.get('players'))) > 1:
-                    msg = "Für ein Einzelspiel darf nicht mehr als einen Mitspieler ausgewählt werden."
+                    msg = "Für ein Einzelspiel darf nicht mehr als ein Mitspieler ausgewählt werden!"
                     self.add_error('players', msg)
             if cleaned_data.get('type')=='Doppelspiel':
                 if (len(cleaned_data.get('players'))) > 3:
-                    msg = "Für ein Doppelspiel dürfen nicht mehr als drei Mitspieler ausgewählt werden."
+                    msg = "Für ein Doppelspiel dürfen nicht mehr als drei Mitspieler ausgewählt werden!"
                     self.add_error('players', msg)
