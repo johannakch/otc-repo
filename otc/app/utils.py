@@ -75,9 +75,7 @@ class EventCalendar(HTMLCalendar):
                         new_time = (datetime.datetime(event.day.year, event.day.month, event.day.day) + timedelta(
                             hours=i + h)).time()
                         new_event = deepcopy(event)
-                        print(type(new_event))
                         new_event.start_time = new_time
-                        print(new_event, new_event.start_time)
                         self.morethanonehour.append(new_event)
 
             s = ''.join(self.formatday(d, wd, m, y, events, i) for (d, wd, m, y) in theweek)

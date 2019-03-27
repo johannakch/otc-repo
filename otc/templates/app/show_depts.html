@@ -33,11 +33,21 @@
 <div class="container">
     <div class="row">
         <div class="col-sm">
-            <div class="alert alert-secondary" role="alert">Bisher {{ exts }} Externe Spieler, also 6€ x {{exts}} = {{sum}}€
+            <a href="{% url 'index' %}" class="btn btn-secondary active" data-toggle="tooltip"
+               data-placement="right" role="button" aria-pressed="true">zurück</a>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-sm">
+            <div class="alert alert-secondary" role="alert">Bisher {{ exts }} Externe Spieler, also 6€ x {{exts}} =
+                {{sum}}€
                 (vorraussichtlich am Ende der Saison zu bezahlen)
             </div>
         </div>
     </div>
+
+    <br/>
     {% for event in events %}
     <div class="row">
         <div class="col-sm-2">
@@ -73,8 +83,8 @@
     </div>
     {% endfor %}
 
-{% else %}
-{% include "not_registered.html" %}
-{% endif %}
+    {% else %}
+    {% include "not_registered.html" %}
+    {% endif %}
 </div>
 {% endblock %}
