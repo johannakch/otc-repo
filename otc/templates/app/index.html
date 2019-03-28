@@ -50,21 +50,22 @@
 
     </div>
     <br/>
-    <div class="row">
-        <div class="col-auto mr-auto">
-            <p>
-                <button type="button" class="btn btn-secondary btn-sm">< letzte Woche</button>
-            </p>
-        </div>
-        <div class="col-auto">
-            <form method="post">
-                {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-auto mr-auto">
                 <p>
-                    <button type="submit" class="btn btn-secondary btn-sm">nächste Woche ></button>
+                    <button type="submit" name="prev" class="btn btn-secondary btn-sm">< letzte Woche</button>
                 </p>
-            </form>
+            </div>
+            <div class="col-auto">
+                <p>
+                    <button type="submit" name="next" class="btn btn-secondary btn-sm">nächste Woche ></button>
+                </p>
+
+            </div>
         </div>
-    </div>
+    </form>
 
     <div class="row">
         <div class="col-sm">

@@ -1,6 +1,8 @@
-from django.conf.urls import url, include
+from django.conf.urls import url
 from django.contrib.auth import views
+
 from .views import request_new_password
+
 
 urlpatterns = [
     url('login/', views.login, name='login'),

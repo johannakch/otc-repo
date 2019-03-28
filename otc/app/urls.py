@@ -1,5 +1,7 @@
 from django.conf.urls import url
-from app import views
+
+from . import views
+
 
 urlpatterns = [
     url(r'^show_depts/$', views.show_depts, name='show_depts'),

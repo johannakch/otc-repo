@@ -1,10 +1,12 @@
-from calendar import HTMLCalendar
-import datetime
-from datetime import timedelta
 from django.urls import reverse
 from django.db.models import Q
-from app.models import Event
+
+from .models import Event
+
+from calendar import HTMLCalendar
 from copy import deepcopy
+import datetime
+from datetime import timedelta
 
 
 class EventCalendar(HTMLCalendar):

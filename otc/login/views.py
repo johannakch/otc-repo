@@ -2,8 +2,6 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.core.mail import EmailMessage
 
-# Create your views here.
-
 
 def request_new_password(request):
     context = {'sendmail_success': False}
@@ -33,7 +31,5 @@ def request_new_password(request):
                     'tried_to_send': True,
                     #'admin_contact': 'mariusschmitt@algrande.net'
                 })
-
-
 
     return render(request, 'registration/request_new_password.html', context)

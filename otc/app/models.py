@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
-from enum import Enum
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
-import datetime
+
+from enum import Enum
+
 User = get_user_model()
+
 
 class GameTypeChoice(Enum):   # A subclass of Enum
     trn_ezl = "Einzelspiel"

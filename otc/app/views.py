@@ -1,21 +1,31 @@
-import datetime
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from app.forms import EventForm
-from app.utils import EventCalendar, get_year_dic, hasReservationRight, get_this_seasons_events, get_number_of_exts
-from app.models import Event, GameTypeChoice
 
-from django.contrib import messages
+from .forms import EventForm
+from .utils import EventCalendar, get_year_dic, hasReservationRight, get_this_seasons_events, get_number_of_exts, week_magic
+from .models import Event
+
+import datetime
 
 
 def index(request):
+    if request.method == 'POST':
+        print(request.POST)
+        if 'next' in request.POST:
+            current_date = get_next_week_from_request(request)
+        elif 'prev' in request.POST:
+            current_date = get_prev_week_from_request(request)
+    else:
+        current_date = datetime.date.today()
+        request.session['current_week'] = (current_date.day, current_date.month, current_date.year)
+
     context = {}
-    today = datetime.date.today()
-    platz_1 = create_base_calendar(request.user, today, 1)
-    platz_2 = create_base_calendar(request.user, today, 2)
-    platz_3 = create_base_calendar(request.user, today, 3)
+    platz_1 = create_base_calendar(request.user, current_date, 1)
+    platz_2 = create_base_calendar(request.user, current_date, 2)
+    platz_3 = create_base_calendar(request.user, current_date, 3)
 
     context.update({
         'platz_3': mark_safe(platz_3),
@@ -24,6 +34,36 @@ def index(request):
     })
 
     return render(request, 'app/index.html', context)
+
+def get_prev_week_from_request(request):
+    d = request.session['current_week'][0]
+    m = request.session['current_week'][1]
+    y = request.session['current_week'][2]
+    date_from_request = datetime.date(day=d, month=m, year=y)
+    start_of_week = week_magic(date_from_request)[0]
+    last_week = (datetime.datetime(start_of_week.year, start_of_week.month, start_of_week.day) - datetime.timedelta(days=1)).date()
+    request.session['current_week'] = (last_week.day, last_week.month, last_week.year)
+    current_date = last_week
+    return current_date
+
+
+def get_next_week_from_request(request):
+    if request.session.has_key('current_week'):
+        d = request.session['current_week'][0]
+        m = request.session['current_week'][1]
+        y = request.session['current_week'][2]
+        date_from_request = datetime.date(day=d, month=m, year=y)
+        end_of_week = week_magic(date_from_request)[1]
+        next_week_start = (datetime.datetime(end_of_week.year, end_of_week.month, end_of_week.day) + datetime.timedelta(days=1)).date()
+        request.session['current_week'] = (next_week_start.day, next_week_start.month, next_week_start.year)
+        current_date = next_week_start
+    else:
+        end_of_week = week_magic(datetime.date.today())[1]
+        next_week_start = (datetime.datetime(end_of_week.year, end_of_week.month, end_of_week.day) + datetime.timedelta(days=1)).date()
+        request.session['current_week'] = (next_week_start.day, next_week_start.month, next_week_start.year)
+        print(request.session['current_week'])
+        current_date = next_week_start
+    return current_date
 
 
 def create_base_calendar(request, today, courtnumber):

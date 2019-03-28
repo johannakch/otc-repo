@@ -1,11 +1,13 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.forms import CheckboxSelectMultiple
+
+from .models import Event
+from .models import GameTypeChoice
+
 import datetime
 
 HOUR_CHOICES = [(datetime.time(hour=x), '{:02d}:00'.format(x)) for x in range(8, 24)]
-from app.models import Event
-from app.models import GameTypeChoice
 
 
 class EventForm(forms.ModelForm):
