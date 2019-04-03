@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 
 from enum import Enum
@@ -21,7 +21,7 @@ class GameTypeChoice(Enum):   # A subclass of Enum
     trn = "Training"
 
 class Event(models.Model):
-    creator = models.ForeignKey(User, related_name='creator', null=True)
+    creator = models.ForeignKey(User, related_name='creator', null=True, on_delete=models.SET_NULL)
     day = models.DateField(u'Datum', help_text=u'Tag der Reservierung')
     start_time = models.TimeField(u'Startzeit', help_text=u'Beginn der Reservierung')
     duration = models.PositiveSmallIntegerField(u'Dauer', help_text=u'Stundenanzahl')
