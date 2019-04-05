@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-{% load staticfiles %}
+{% load utils %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Jahresübersicht{% endblock %}
 
 {% block navigation_bar %}
 {% if user.is_authenticated %}
@@ -35,56 +35,51 @@
 {% block content %}
 {% if user.is_authenticated %}
 
-{% if messages %}
-{% for message in messages %}
-<br/>
-<div class="alert alert-primary" role="alert">
-    {{ message }}
-</div>
-{% endfor %}
-
-{% endif %}
 <br/>
 <div class="container">
     <div class="row">
-        <div class="col-sm">
-            Hi {{ user.get_full_name }}!
+        <div class="col-auto mr-auto">
+            <h2>
+                Jahresübersicht
+                <small>allgemeine Veranstaltungen</small>
+            </h2>
         </div>
-
-    </div>
-    <br/>
-    <form method="post">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-auto mr-auto">
-                <p>
-                    <button type="submit" name="prev" class="btn btn-secondary btn-sm">< letzte Woche</button>
-                </p>
-            </div>
-            <div class="col-auto">
-                <p>
-                    <button type="submit" name="next" class="btn btn-secondary btn-sm">nächste Woche ></button>
-                </p>
-
-            </div>
-        </div>
-    </form>
-
-    <div class="row">
-        <div class="col-sm">
-            {{ platz_3 }}
+        <div class="col-auto">
+            <a href="{% url 'index' %}" class="btn btn-secondary active" data-toggle="tooltip"
+               data-placement="right" role="button" aria-pressed="true">zurück</a>
         </div>
     </div>
     <br/>
+
     <div class="row">
         <div class="col-sm">
-            {{ platz_2 }}
-        </div>
-    </div>
-    <br/>
-    <div class="row">
-        <div class="col-sm">
-            {{ platz_1 }}
+            <table class="table-responsive table" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <th>Datum</th>
+                    <th>Uhrzeit</th>
+                    <th>Event</th>
+                </tr>
+                {% for month in event_months_dic %}
+                <tr>
+                    <th style="background-color: #F2F3F3">{{ month|format_month }}</th>
+                    <th style="background-color: #F2F3F3"></th>
+                    <th style="background-color: #F2F3F3"></th>
+                </tr>
+                {% for event in event_months_dic|get_item:month %}
+                <tr>
+                    <td width="130" height="20">
+                        {{ event.day }}
+                    </td>
+                    <td width="80" height="20">
+                        {{ event.start_time }}
+                    </td>
+                    <td width="300" height="20">
+                        {{ event.title }}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            </table>
         </div>
     </div>
 

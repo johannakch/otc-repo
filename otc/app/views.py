@@ -6,14 +6,13 @@ from django.utils.safestring import mark_safe
 
 from .forms import EventForm
 from .utils import EventCalendar, get_year_dic, hasReservationRight, get_this_seasons_events, get_number_of_exts, week_magic
-from .models import Event
+from .models import Event, GameTypeChoice
 
 import datetime
 
 
 def index(request):
     if request.method == 'POST':
-        print(request.POST)
         if 'next' in request.POST:
             current_date = get_next_week_from_request(request)
         elif 'prev' in request.POST:
@@ -61,7 +60,6 @@ def get_next_week_from_request(request):
         end_of_week = week_magic(datetime.date.today())[1]
         next_week_start = (datetime.datetime(end_of_week.year, end_of_week.month, end_of_week.day) + datetime.timedelta(days=1)).date()
         request.session['current_week'] = (next_week_start.day, next_week_start.month, next_week_start.year)
-        print(request.session['current_week'])
         current_date = next_week_start
     return current_date
 
@@ -168,3 +166,26 @@ def show_depts(request):
     context['exts'] = number_of_exts
     context['sum'] = number_of_exts * 5
     return render(request, 'app/show_depts.html', context)
+
+
+def year_overview(request):
+    context = {}
+    type_list = [(type.value) for type in GameTypeChoice
+                 if type.value != 'Einzelspiel'
+                 if type.value != 'Doppelspiel'
+                 if type.value != 'Training'
+                 if type.value != 'Turnier']
+
+    current_year = datetime.date.today().year
+    general_events = Event.objects.filter(type__in=type_list, day__year=current_year).order_by('day', 'start_time')
+    event_months_dic = {}
+    for event in general_events:
+        if event.day.month not in event_months_dic:
+            event_months_dic[event.day.month] = [event]
+        else:
+            event_months_dic[event.day.month].append(event)
+
+    context.update({
+        'event_months_dic': event_months_dic,
+    })
+    return render(request, 'app/year_overview.html', context)
