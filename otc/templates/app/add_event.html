@@ -88,12 +88,14 @@
                     <p style="line-height: 40%">Spieler*</p>
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
                             aria-haspopup="true" aria-expanded="false"
-                            data-toggle="dropdown">auswählen
+                            data-toggle="dropdown"
+                            onclick="myFunction()">auswählen
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <div id="myDropdown" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <input class="form-control" type="text" placeholder="Search..." id="myInput" onkeyup="filterFunction()">
                         <!-- {% if item.value.get_username == 'viviane' %} TODO: compare wither {{user }} value wich is name of act user {% endif %}-->
                         {% for item in form.players %}
-                        <div class="dropdown-item">{{ item }}</div>
+                        <a><div class="dropdown-item">{{ item }}</div></a>
                         {% endfor %}
                     </div>
                 </div>
@@ -130,4 +132,29 @@
     </form>
     <br/>
 </div>
+
+<script>
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function filterFunction() {
+  var input, filter, ul, li, a, i;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  div = document.getElementById("myDropdown");
+  a = div.getElementsByTagName("a");
+  for (i = 0; i < a.length; i++) {
+    txtValue = a[i].textContent || a[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      a[i].style.display = "";
+    } else {
+      a[i].style.display = "none";
+    }
+  }
+}
+</script>
+
 {% endblock %}
