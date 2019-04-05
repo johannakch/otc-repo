@@ -137,6 +137,7 @@ def format_date(day, month, year):
 
 # TODO: email benachrichtigung bei delete
 def show_event(request, id):
+    print(request.GET)
     if 'delete' in request.GET:
         id = int(request.GET.get('delete'))
         print('deletet event:' + str(request.GET.get('delete')))
@@ -173,8 +174,7 @@ def year_overview(request):
     type_list = [(type.value) for type in GameTypeChoice
                  if type.value != 'Einzelspiel'
                  if type.value != 'Doppelspiel'
-                 if type.value != 'Training'
-                 if type.value != 'Turnier']
+                 if type.value != 'Training']
 
     current_year = datetime.date.today().year
     general_events = Event.objects.filter(type__in=type_list, day__year=current_year).order_by('day', 'start_time')

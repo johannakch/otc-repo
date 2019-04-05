@@ -49,17 +49,17 @@
             <p style="font-weight: 700;">{{ event.title }}:</p>
         </div>
     </div>
+    {% if players %}
     <div class="row">
         <div class="col-sm">
             <p>Spieler:
-                {% if players %}
                 {% for p in players %}
                 {{ p }}
                 {% endfor %}
-                {% endif %}
             </p>
         </div>
     </div>
+    {% endif %}
     <div class="row">
         <div class="col-sm">
             <p>Typ: {{ event.type }}</p>
@@ -95,10 +95,10 @@
             <p>Notizen: {% if event.notes %}{{ event.notes }}{% else %} / {% endif %}</p>
         </div>
     </div>
-     <div class="row">
+    <div class="row">
         <div class="col-sm">
-                {% if is_member_of_event %}
-            <form>
+            {% if is_member_of_event %}
+            <form method="post">
                 <button name="delete" value="{{event.id}}" type="submit" class="save btn btn-danger">löschen</button>
             </form>
             {% endif %}

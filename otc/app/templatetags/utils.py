@@ -1,4 +1,5 @@
 from django import template
+from django.contrib.auth.models import User
 
 from ..utils import get_year_dic
 
@@ -11,5 +12,15 @@ def format_month(month):
 
 @register.filter
 def get_item(dic, key):
-    print(dic[key])
     return dic[key]
+
+@register.filter
+def is_not_self(item, current_user):
+    if item.data['label'] != current_user:
+        return True
+    return False
+
+@register.filter
+def format_name(item):
+    full_name = User.objects.filter(username=item.data['label'])[0].get_full_name()
+    return full_name
