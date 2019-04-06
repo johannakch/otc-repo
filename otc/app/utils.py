@@ -24,21 +24,27 @@ class EventCalendar(HTMLCalendar):
         type_color = '#ffc107'
         events_from_day = events.filter(day__day=day, number=self.courtnumber)
         events_html = ""
+        is_start = False
+        is_middle = False
+        is_end = False
         for event in events_from_day:
+            is_start = get_is_start(event)
             type_color = get_type_color(event.type)
             events_html += event.get_absolute_url(type_color) + "<br>"
 
         # check if there is a two hour game
         if events_html == '':
-            for ev in self.morethanonehour:
+            for (ev, old_start_time) in self.morethanonehour:
                 if ev.start_time.hour == hour and ev.day.year == theyear and ev.day.month == themonth and ev.day.day == day and ev.number == self.courtnumber:
                     type_color = get_type_color(ev.type)
+                    is_middle = get_is_middle(ev, old_start_time)
+                    is_end = get_is_end(ev, old_start_time)
                     events_html += ev.get_absolute_url(type_color) + "<br>"
 
         if day == 0:
             return '<td class="noday">&nbsp;</td>'
         else:
-            return self.get_tablecell_content(theyear, themonth, day, hour, weekday, events_html, type_color)
+            return self.get_tablecell_content(theyear, themonth, day, hour, weekday, events_html, type_color, is_start, is_middle, is_end)
 
     def formatweek(self, today, themonth, theyear):
         """
@@ -78,7 +84,7 @@ class EventCalendar(HTMLCalendar):
                             hours=i + h)).time()
                         new_event = deepcopy(event)
                         new_event.start_time = new_time
-                        self.morethanonehour.append(new_event)
+                        self.morethanonehour.append((new_event, event.start_time))
 
             s = ''.join(self.formatday(d, wd, m, y, events, i) for (d, wd, m, y) in theweek)
             if i < 10:
@@ -112,7 +118,7 @@ class EventCalendar(HTMLCalendar):
 
         return monthname
 
-    def get_tablecell_content(self, theyear, themonth, day, hour, weekday, events_html, type_color):
+    def get_tablecell_content(self, theyear, themonth, day, hour, weekday, events_html, type_color, is_start, is_middle, is_end):
         # check if date to show is in the past
         current_date = datetime.date(year=theyear, month=themonth, day=day)
         admin_user = (self.user.is_superuser or self.user.is_staff) and (
@@ -123,8 +129,18 @@ class EventCalendar(HTMLCalendar):
             if events_html == '':
                 return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
             else:
-                return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 15px 15px">%s</td>' % (
-                    self.cssclasses[weekday], type_color['type'], events_html)
+                if is_start:
+                    return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 0px 0px">%s</td>' % (
+                        self.cssclasses[weekday], type_color['type'], events_html)
+                elif is_middle:
+                    return '<td class="%s" style="background-color: %s">%s</td>' % (
+                        self.cssclasses[weekday], type_color['type'], events_html)
+                elif is_end:
+                    return '<td class="%s" style="background-color: %s; border-radius: 0px 0px 15px 15px">%s</td>' % (
+                        self.cssclasses[weekday], type_color['type'], events_html)
+                else:
+                    return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 15px 15px">%s</td>' % (
+                        self.cssclasses[weekday], type_color['type'], events_html)
         else:
             # if self.twohoursgame:
             #     events_html += self.twohoursgame.get_absolute_url() + "<br>"
@@ -135,15 +151,35 @@ class EventCalendar(HTMLCalendar):
                     return '<td class="%s"><a href="%s" style="color: #2C3E50">+</a></td>' % (
                         self.cssclasses[weekday], url)
                 else:
-                    return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 15px 15px">%s</td>' % (
-                        self.cssclasses[weekday], type_color['type'], events_html)
+                    if is_start:
+                        return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 0px 0px">%s</td>' % (
+                            self.cssclasses[weekday], type_color['type'], events_html)
+                    elif is_middle:
+                        return '<td class="%s" style="background-color: %s">%s</td>' % (
+                            self.cssclasses[weekday], type_color['type'], events_html)
+                    elif is_end:
+                        return '<td class="%s" style="background-color: %s; border-radius: 0px 0px 15px 15px">%s</td>' % (
+                            self.cssclasses[weekday], type_color['type'], events_html)
+                    else:
+                        return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 0px 0px">%s</td>' % (
+                            self.cssclasses[weekday], type_color['type'], events_html)
             elif active_user:
                 if events_html == '':
                     return '<td class="%s"><a href="%s" style="color: #2C3E50">+</a></td>' % (
                         self.cssclasses[weekday], url)
                 else:
-                    return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 15px 15px">%s</td>' % (
-                           self.cssclasses[weekday], type_color['type'], events_html)
+                    if is_start:
+                        return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 0px 0px">%s</td>' % (
+                            self.cssclasses[weekday], type_color['type'], events_html)
+                    elif is_middle:
+                        return '<td class="%s" style="background-color: %s">%s</td>' % (
+                            self.cssclasses[weekday], type_color['type'], events_html)
+                    elif is_end:
+                        return '<td class="%s" style="background-color: %s; border-radius: 0px 0px 15px 15px">%s</td>' % (
+                            self.cssclasses[weekday], type_color['type'], events_html)
+                    else:
+                        return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 0px 0px">%s</td>' % (
+                            self.cssclasses[weekday], type_color['type'], events_html)
             else:
                 return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
 
@@ -196,6 +232,23 @@ def get_type_color(event_type):
                   'Medenrunde': {'type': '#FADBD8', 'font': '#B03A2E'}}
     return color_dict[event_type]
 
+def get_is_start(event):
+    if event.duration > 1:
+        return True
+    return False
+
+def get_is_middle(ev, old_start_time):
+    diff = (ev.start_time.hour - old_start_time.hour) + 1
+    print(diff)
+    if diff < ev.duration:
+        return True
+    return False
+
+def get_is_end(ev, old_start_time):
+    diff = (ev.start_time.hour - old_start_time.hour) + 1
+    if diff == ev.duration:
+        return True
+    return False
 
 def get_this_seasons_events(user):
     today = datetime.date.today()
