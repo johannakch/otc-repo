@@ -92,7 +92,7 @@
                             onclick="myFunction()">auswählen
                     </button>
                     <div id="myDropdown" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <input class="form-control" type="text" placeholder="Search..." id="myInput" onkeyup="filterFunction()">
+                        <input class="form-control" type="text" placeholder="Suche..." id="myInput" onkeyup="filterFunction()">
                         {% for item in form.players %}
                         {% if item|is_not_self:user %}
                         <a><div class="dropdown-item">{{ item|format_name }}</div></a>
