@@ -161,7 +161,7 @@ class EventCalendar(HTMLCalendar):
                         return '<td class="%s" style="background-color: %s; border-radius: 0px 0px 15px 15px">%s</td>' % (
                             self.cssclasses[weekday], type_color['type'], events_html)
                     else:
-                        return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 0px 0px">%s</td>' % (
+                        return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 15px 15px">%s</td>' % (
                             self.cssclasses[weekday], type_color['type'], events_html)
             elif active_user:
                 if events_html == '':
@@ -178,7 +178,7 @@ class EventCalendar(HTMLCalendar):
                         return '<td class="%s" style="background-color: %s; border-radius: 0px 0px 15px 15px">%s</td>' % (
                             self.cssclasses[weekday], type_color['type'], events_html)
                     else:
-                        return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 0px 0px">%s</td>' % (
+                        return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 15px 15px">%s</td>' % (
                             self.cssclasses[weekday], type_color['type'], events_html)
             else:
                 return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
