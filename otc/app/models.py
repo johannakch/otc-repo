@@ -39,7 +39,9 @@ class Event(models.Model):
         verbose_name = u'Reservierung'
         verbose_name_plural = u'Reservierungen'
 
-    def check_overlap(self, fixed_start, fixed_end, new_start, new_end):
+    def check_overlap(self, fixed_start, fixed_end, new_start, new_end, fixed_number, new_number):
+        if fixed_number == new_number:
+            return False
         overlap = False
         if new_start == fixed_end or new_end == fixed_start:  # edge case
             overlap = False
@@ -60,7 +62,9 @@ class Event(models.Model):
         events = Event.objects.filter(day=self.day)
         if events.exists():
             for event in events:
-                if self.check_overlap(event.start_time, event.get_end_time(), self.start_time, self.get_end_time()):
+                if event is self:
+                    print(self)
+                if self.check_overlap(event.start_time, event.get_end_time(), self.start_time, self.get_end_time(), event.number, self.number):
                     raise ValidationError(
                         'Leider überschneidet sich die Reservierung mit einer anderen: ' + str(event.day) + ', ' + str(
                             event.start_time) + '-' + str(event.get_end_time()))

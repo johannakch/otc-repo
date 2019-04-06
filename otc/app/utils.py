@@ -191,6 +191,8 @@ def get_year_dic():
 
 # falls user schon event in dieser woche hat -> gibt diese methode false zurück
 def hasReservationRight(user, theyear, themonth, day):
+    if (((user.is_staff) or (user.is_superuser)) and user.is_active):
+        return True
     start, end = week_magic(datetime.date(year=theyear, month=themonth, day=day))
     weeklyevents = Event.objects.filter(day__range=[start, end])
     usersevents = weeklyevents.filter(creator=user).filter(Q(type='Einzelspiel') or Q(type='Doppelspiel'))
