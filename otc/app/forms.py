@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.utils import timezone
 from django.forms import CheckboxSelectMultiple
 
 from .models import Event
@@ -20,12 +21,18 @@ class EventForm(forms.ModelForm):
         m = kwargs.pop('month')
         d = kwargs.pop('day')
         selectedType = kwargs.pop('type')
-        print(selectedType)
         super(EventForm, self).__init__(*args, **kwargs)
         events = Event.objects.filter(day=datetime.date(year=int(y), month=int(m), day=int(d)))
         eventTimes = [int(x.start_time.strftime("%H")) for x in events]
-
-        self.fields['start_time'].widget.choices = [(datetime.time(hour=x), '{:02d}:00'.format(x)) for x in range(8, 24)
+        # es sollten keine zeiten vor der aktuellen anklickbar sein,
+        # wenn es um einen termin am aktuellen tag geht
+        starthour = 8
+        today = datetime.date.today()
+        if (today.year==int(y) and today.month==int(m) and today.day==int(d)):
+            starthour = timezone.now().hour+3
+            if starthour>23:
+                starthour = 23
+        self.fields['start_time'].widget.choices = [(datetime.time(hour=x), '{:02d}:00'.format(x)) for x in range(starthour, 24)
                                                     if x not in eventTimes]
         if is_basic_user:
             self.fields['type'].choices = [(tag.value, tag.value) for tag in GameTypeChoice if
