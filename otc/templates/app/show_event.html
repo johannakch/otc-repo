@@ -32,6 +32,15 @@
 <br/>
 <div class="container">
     <div class="row">
+        <div class="col-sm">
+            {% if delete_error %}
+            <div class="alert alert-danger" role="alert">
+                {{ delete_error }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
         <div class="col-auto mr-auto">
             <h2>Reservierung
                 <small class="text-muted">{{ event.day }}</small>
@@ -95,15 +104,50 @@
             <p>Notizen: {% if event.notes %}{{ event.notes }}{% else %} / {% endif %}</p>
         </div>
     </div>
+    {% if is_member_of_event %}
     <div class="row">
         <div class="col-sm">
-            {% if is_member_of_event %}
-            <form method="post">
-                <button name="delete" value="{{event.id}}" type="submit" class="save btn btn-danger">löschen</button>
-            </form>
-            {% endif %}
+
+
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">
+                löschen
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Reservierung wirklich löschen?</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {{ event.title }}:
+                            {{ event.day }}, {{ event.start_time }} Uhr<br/>
+                            {% for p in players %}
+                            {{ p }}
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">abbrechen</button>
+                            <form method="post">
+                                {% csrf_token %}
+                                <button name="delete" value="{{event.id}}" type="submit" class="btn btn-danger">
+                                    löschen
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
+    {% endif %}
 </div>
 
 {% else %}

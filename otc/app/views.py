@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django.core.mail import EmailMessage
+from django.contrib.auth.models import User
 
 from .forms import EventForm
 from .utils import EventCalendar, get_year_dic, hasReservationRight, get_this_seasons_events, get_number_of_exts, week_magic
@@ -135,15 +137,33 @@ def format_date(day, month, year):
     return '{}. {} {}'.format(day, year_dic[int(month)], year)
 
 
-# TODO: email benachrichtigung bei delete
 def show_event(request, id):
-    print(request.GET)
-    if 'delete' in request.GET:
-        id = int(request.GET.get('delete'))
-        print('deletet event:' + str(request.GET.get('delete')))
-        Event.objects.filter(id=id).delete()
-        return HttpResponseRedirect(reverse('index'))
     context = {}
+    if 'delete' in request.POST:
+        id = int(request.POST.get('delete'))
+        print('deleted event: ID ' + str(request.POST.get('delete')))
+        event_to_delete = Event.objects.filter(id=id)
+        superusers = [user.email for user in User.objects.filter(is_superuser=True)]
+        subject = 'Event wurde gelöscht!'
+        von_name = request.user.get_full_name()
+        message = '{} hat folgende Reservierung gelöscht: {}'.format(von_name,
+                                                                     event_to_delete[0].title+', '+
+                                                                     str(event_to_delete[0].day.strftime('%d.%m.%Y'))+', '+
+                                                                     str(event_to_delete[0].start_time)+' Uhr')
+        try:
+            event_to_delete.delete()
+            try:
+                email = EmailMessage(subject, message, to=superusers)
+                email.send()
+            except Exception as exc:
+                print(exc)
+            return HttpResponseRedirect(reverse('index'))
+        except Exception as e:
+            print(e)
+            msg = 'Die Reservierung konnte nicht gelöscht werden!'
+            context.update({
+                'delete_error': msg
+            })
     iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
     context['id'] = id
     event = Event.objects.get(id=id)

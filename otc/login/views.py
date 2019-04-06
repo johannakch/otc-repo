@@ -25,7 +25,7 @@ def request_new_password(request):
                         'tried_to_send': True,
                     })
             except Exception as e:
-                #print(e)
+                print(e)
                 context.update({
                     'sendmail_success': False,
                     'tried_to_send': True,
