@@ -12,7 +12,7 @@ HOUR_CHOICES = [(datetime.time(hour=x), '{:02d}:00'.format(x)) for x in range(8,
 
 class EventForm(forms.ModelForm):
     players = forms.ModelMultipleChoiceField(queryset=User.objects.all(),
-                                             widget=CheckboxSelectMultiple(), required=True)
+                                             widget=CheckboxSelectMultiple())
 
     def __init__(self, *args, **kwargs):
         is_basic_user = kwargs.pop('is_basic_user')

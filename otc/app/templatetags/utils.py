@@ -1,5 +1,6 @@
 from django import template
 from django.contrib.auth.models import User
+from django.forms.boundfield import BoundWidget
 
 from ..utils import get_year_dic
 
@@ -23,4 +24,8 @@ def is_not_self(item, current_user):
 @register.filter
 def format_name(item):
     full_name = User.objects.filter(username=item.data['label'])[0].get_full_name()
-    return full_name
+    item.data.update({
+        'label': full_name
+    })
+    new = BoundWidget(item.parent_widget, item.data, item.renderer)
+    return new

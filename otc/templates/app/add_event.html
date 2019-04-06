@@ -95,7 +95,7 @@
                         <input class="form-control" type="text" placeholder="Suche..." id="myInput" onkeyup="filterFunction()">
                         {% for item in form.players %}
                         {% if item|is_not_self:user %}
-                        <a><div class="dropdown-item">{{ item|format_name }}</div></a>
+                        <div class="dropdown-item">{{ item|format_name }}</div>
                         {% endif %}
                         {% endfor %}
                     </div>
@@ -146,7 +146,7 @@ function filterFunction() {
   input = document.getElementById("myInput");
   filter = input.value.toUpperCase();
   div = document.getElementById("myDropdown");
-  a = div.getElementsByTagName("a");
+  a = div.getElementsByClassName("dropdown-item");
   for (i = 0; i < a.length; i++) {
     txtValue = a[i].textContent || a[i].innerText;
     if (txtValue.toUpperCase().indexOf(filter) > -1) {
