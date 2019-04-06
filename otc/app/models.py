@@ -53,7 +53,7 @@ class Event(models.Model):
 
     def get_absolute_url(self, type_color):
         url = reverse('show_event', args=[self.id])
-        return u'<a href="%s" style="color: %s">%s %s</a>' \
+        return u'<a href="%s" style="color: %s">%s%s</a>' \
                % (url, type_color['font'], self.title, get_player_names(self, [p for p in self.players.all()]))
 
     def clean(self):
@@ -73,4 +73,7 @@ class Event(models.Model):
 
 def get_player_names(event, players):
     type_list = ['Einzelspiel', 'Doppelspiel']
-    return ', '.join([player.get_full_name() for player in players if event.type in type_list])
+    player_list = [player.get_full_name() for player in players if event.type in type_list]
+    if player_list == []:
+        return ''
+    return ': '+', '.join(player_list)
