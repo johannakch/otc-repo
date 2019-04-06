@@ -24,7 +24,7 @@ SECRET_KEY = '8#r*u3&kjc0h@+lvtkmqkivzb#oqpr4iz3+l0m+zi%8y!7skg!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['johannak.uber.space', 'localhost']
 
 # Application definition
 
