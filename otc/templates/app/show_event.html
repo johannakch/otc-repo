@@ -67,9 +67,9 @@
     {% if players %}
     <div class="row">
         <div class="col-sm">
-            <p>Spieler:
+            <p><b>Spieler:</b><br/>
                 {% for p in players %}
-                {{ p }}
+                {{ p }}<br/>
                 {% endfor %}
             </p>
         </div>
@@ -77,27 +77,27 @@
     {% endif %}
     <div class="row">
         <div class="col-sm">
-            <p>Typ: {{ event.type }}</p>
+            <p><b>Typ:</b> {{ event.type }}</p>
         </div>
     </div>
     <div class="row">
         <div class="col-sm">
-            <p>Beginn: {{ event.start_time }} Uhr</p>
+            <p><b>Beginn:</b> {{ event.start_time }} Uhr</p>
         </div>
     </div>
     <div class="row">
         <div class="col-sm">
-            <p>Dauer: {{ event.duration }} Stunde/n</p>
+            <p><b>Dauer:</b> {{ event.duration }} Stunde/n</p>
         </div>
     </div>
     <div class="row">
         <div class="col-sm">
-            <p>Platznummer: {{ event.number }}</p>
+            <p><b>Platznummer:</b> {{ event.number }}</p>
         </div>
     </div>
     <div class="row">
         <div class="col-sm">
-            <p>Externe: {% if event.externPlayer1 %}{{ event.externPlayer1 }}{% endif %}
+            <p><b>Externe:</b> {% if event.externPlayer1 %}{{ event.externPlayer1 }}{% endif %}
                 {% if event.externPlayer2 %}{{ event.externPlayer2 }}{% endif %}
                 {% if event.externPlayer3 %}{{ event.externPlayer3 }}{% endif %}
                 {% if not event.externPlayer1 and not event.externPlayer2 and not event.externPlayer3 %}
@@ -107,7 +107,7 @@
     </div>
     <div class="row">
         <div class="col-sm">
-            <p>Notizen: {% if event.notes %}{{ event.notes }}{% else %} / {% endif %}</p>
+            <p><b>Notizen:</b> {% if event.notes %}{{ event.notes }}{% else %} / {% endif %}</p>
         </div>
     </div>
     {% if is_member_of_event %}

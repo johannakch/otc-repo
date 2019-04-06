@@ -239,7 +239,6 @@ def get_is_start(event):
 
 def get_is_middle(ev, old_start_time):
     diff = (ev.start_time.hour - old_start_time.hour) + 1
-    print(diff)
     if diff < ev.duration:
         return True
     return False
