@@ -74,6 +74,7 @@ class Event(models.Model):
     def __str__(self):
         return self.title
 
+
 def get_player_names(event, players):
     type_list = ['Einzelspiel', 'Doppelspiel']
     player_list = [player.get_full_name() for player in players if event.type in type_list]

@@ -270,6 +270,8 @@ def get_number_of_exts(events):
             count = count + 1
     return count
 
+
+
 def str_to_bool(string):
     if string == "False":
         return False

@@ -56,8 +56,10 @@ class EventForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        players = 0
         if not (cleaned_data.get('players')==None):
             #print('Playerscount: '+str(len(cleaned_data.get('players'))))
+            players = len(cleaned_data.get('players'))
             if cleaned_data.get('type')=='Einzelspiel':
                 if (len(cleaned_data.get('players'))) > 1:
                     msg = "Für ein Einzelspiel darf nicht mehr als ein Mitspieler ausgewählt werden!"
@@ -66,3 +68,23 @@ class EventForm(forms.ModelForm):
                 if (len(cleaned_data.get('players'))) > 3:
                     msg = "Für ein Doppelspiel dürfen nicht mehr als drei Mitspieler ausgewählt werden!"
                     self.add_error('players', msg)
+        exts = get_number_of_One_events_exts(cleaned_data)
+        if cleaned_data.get('type')=='Einzelspiel':
+            if (players + exts) != 1:
+                msg = "Für ein Einzelspiel muss genau ein Mitspieler ausgewählt werden! (Externer oder Interner)"
+                self.add_error('players', msg)
+        if cleaned_data.get('type')=='Doppelspiel':
+            if (players + exts) != 3:
+                msg = "Für ein Doppelspiel müssen genau drei Mitspieler ausgewählt werden! (Beliebige Kombination aus Externen und Internen)"
+                self.add_error('players', msg)
+
+def get_number_of_One_events_exts(cleaned_data):
+        count = 0
+        if not cleaned_data.get('externPlayer1') == '':
+            count = count + 1
+        if not cleaned_data.get('externPlayer2') == '':
+            count = count + 1
+        if not cleaned_data.get('externPlayer3') == '':
+            count = count + 1
+        print("exts"+str(count))
+        return count
