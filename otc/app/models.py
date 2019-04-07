@@ -40,17 +40,16 @@ class Event(models.Model):
         verbose_name_plural = u'Reservierungen'
 
     def check_overlap(self, fixed_start, fixed_end, new_start, new_end, fixed_number, new_number):
-        if fixed_number == new_number:
+        if not fixed_number == new_number:
             return False
         overlap = False
         if new_start == fixed_end or new_end == fixed_start:  # edge case
             overlap = False
         elif (new_start >= fixed_start and new_start <= fixed_end) or (
-                new_end >= fixed_start and new_end <= fixed_end):  # innner limits
+                new_end >= fixed_start and new_end <= fixed_end):  # start within fixed or end within fixed
             overlap = True
         elif new_start <= fixed_start and new_end >= fixed_end:  # outter limits
             overlap = True
-
         return overlap
 
     def get_absolute_url(self, type_color):

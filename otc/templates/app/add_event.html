@@ -19,6 +19,31 @@
 
     <hr/>
     <br/>
+    {% if messages %}
+    {% for message in messages %}
+    <br/>
+    <div class="alert alert-primary" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+
+    {% if form.errors %}
+    {% for field in form %}
+    {% for error in field.errors %}
+    <div class="alert alert-danger">
+        <strong>{{ error|escape }}</strong>
+    </div
+    {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+    <div class="alert alert-danger">
+        <strong>{{ error|escape }}</strong>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% endif %}
+    <br/>
     <form method="post" novalidate>
         {% csrf_token %}
         {% if not is_basic_user %}
@@ -57,14 +82,17 @@
         <div class="row">
             <div class="col-sm">
                 {{ form.start_time|as_crispy_field }}
+                {{ form.start_time.errors }}
             </div>
             <div class="col-sm">
                 {{ form.duration|as_crispy_field }}
+                {{ form.duration.errors }}
             </div>
             {% if not is_basic_user %}
             <div class="col-sm">
                 <!--  Falls Admin angemeldet ist -> Platz wählen -->
                 {{ form.number|as_crispy_field }}
+                {{ form.number.errors }}
                 <br/>
             </div>
             {% endif %}
@@ -92,7 +120,8 @@
                             onclick="myFunction()">auswählen
                     </button>
                     <div id="myDropdown" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <input class="form-control" type="text" placeholder="Suche..." id="myInput" onkeyup="filterFunction()">
+                        <input class="form-control" type="text" placeholder="Suche..." id="myInput"
+                               onkeyup="filterFunction()">
                         {% for item in form.players %}
                         {% if item|is_not_self:user %}
                         <div class="dropdown-item">{{ item|format_name }}</div>
@@ -156,6 +185,8 @@ function filterFunction() {
     }
   }
 }
+
+
 </script>
 
 {% endblock %}

@@ -7,8 +7,10 @@ from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
 
 from .forms import EventForm
-from .utils import EventCalendar, get_year_dic, hasReservationRight, get_this_seasons_events, get_number_of_exts, week_magic
+from .utils import EventCalendar, get_year_dic, hasReservationRight, get_this_seasons_events, get_number_of_exts, week_magic, str_to_bool
 from .models import Event, GameTypeChoice
+from django.core.exceptions import ValidationError
+
 
 import datetime
 
@@ -78,29 +80,36 @@ def add_event(request, year, month, day, hour):
     # boolean der form und html verändert, je nachdem ob es ein basic user oder ein staff/superuser ist
     context['is_basic_user'] = iba
     context['user'] = str(request.user)
-    einzel = None  # wert der sich merkt ob einzel oder doppelbutton oben im form gewählt wurde
     time_value = datetime.time(int(hour), 00)
-    context[einzel] = True
+    context['einzel'] = True # wert der sich merkt ob einzel oder doppelbutton oben im form gewählt wurde
     if request.method == 'POST':
+        print("POST")
         # initialwerte für duration je nach einzel oder doppel, wenn einer der buttons oben im form gedrückt wurde
         if 'einzel' in request.POST:
+            print("einzel selected")
             context['einzel'] = True
             context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1}, is_basic_user=iba, year=year,
                                         month=month, day=day, type='einzel')
         elif 'doppel' in request.POST:
+            print("doppel selected")
             context['einzel'] = False
             context['form'] = EventForm(initial={'start_time': time_value, 'duration': 2}, is_basic_user=iba, year=year,
                                         month=month, day=day, type='doppel')
         else:
             updated_request = request.POST.copy()
-            if iba:
-                # type setzen aus vorheriger buttonauswahl
-                if request.POST.get("einzel-selected", None):
-                    updated_request.update({'type': 'Einzelspiel'})
-                else:
-                    updated_request.update({'type': 'Doppelspiel'})
             new_event_form = EventForm(updated_request, is_basic_user=iba, year=year, month=month, day=day,
                                        type='einzel')
+            if iba:
+                einzel_selected = str_to_bool(request.POST.get("einzel-selected"))
+                # type setzen aus vorheriger buttonauswahl
+                if einzel_selected:
+                    updated_request.update({'type': 'Einzelspiel',"title":'Reserviert für'})
+                    new_event_form = EventForm(updated_request, is_basic_user=iba, year=year, month=month, day=day,
+                                               type='einzel')
+                else:
+                    updated_request.update({'type': 'Doppelspiel',"title":'Reserviert für'})
+                    new_event_form = EventForm(updated_request, is_basic_user=iba, year=year, month=month, day=day,
+                                               type='doppel')
             context['form'] = new_event_form
             # TODO: Wenn kein Mitspieler ausgewählt wird ist es doch auch ok oder? Warum required? -> Marius fragen
             if new_event_form.is_valid():
@@ -115,10 +124,15 @@ def add_event(request, year, month, day, hour):
                     else:
                         new_event.type = "Doppelspiel"
                 new_event.day = datetime.date(year=int(year), month=int(month), day=int(day))
-                new_event.save()
-                new_event_form.save_m2m()
-                # TODO: request.user sollte nicht in der Liste auswaehlbar sein und erst hier dem Event hinzugefuegt werden:
-                return HttpResponseRedirect(reverse('index'))
+                try:
+                    new_event.clean()
+                    new_event.save()
+                    new_event_form.save_m2m()
+                    return HttpResponseRedirect(reverse('index'))
+                except ValidationError as err:
+                    print("Validation error: {0}".format(err))
+                    messages.info(request,"Error: {0}".format(err))
+                    return render(request, 'app/add_event.html', context)
             # TODO: Aussagekräftige Fehlermeldungens
     else:
         if (hasReservationRight(request.user, int(year), int(month), int(day))):
