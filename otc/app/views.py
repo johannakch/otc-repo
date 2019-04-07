@@ -139,6 +139,7 @@ def format_date(day, month, year):
 
 def show_event(request, id):
     context = {}
+    iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
     if 'delete' in request.POST:
         id = int(request.POST.get('delete'))
         print('deleted event: ID ' + str(request.POST.get('delete')))
@@ -150,21 +151,24 @@ def show_event(request, id):
                                                                      event_to_delete[0].title+', '+
                                                                      str(event_to_delete[0].day.strftime('%d.%m.%Y'))+', '+
                                                                      str(event_to_delete[0].start_time)+' Uhr')
+
         try:
             event_to_delete.delete()
-            try:
-                email = EmailMessage(subject, message, to=superusers)
-                email.send()
-            except Exception as exc:
-                print(exc)
-            return HttpResponseRedirect(reverse('index'))
+            if iba:
+                try:
+                    email = EmailMessage(subject, message, to=superusers)
+                    email.send()
+                except Exception as exc:
+                    print(exc)
+                return HttpResponseRedirect(reverse('index'))
         except Exception as e:
             print(e)
             msg = 'Die Reservierung konnte nicht gelöscht werden!'
             context.update({
                 'delete_error': msg
             })
-    iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
+        return HttpResponseRedirect(reverse('index'))
+
     context['id'] = id
     event = Event.objects.get(id=id)
     players_list = [player.get_full_name() for player in event.players.all() if event.players.all()]
