@@ -120,7 +120,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = '/var/www/virtual/johannak/html/static/'
-LOGIN_REDIRECT_URL = '/app/'
+LOGIN_REDIRECT_URL = '/otc-repo/otc/app/'
 LOGOUT_REDIRECT_URL = 'login'
 
 # EMAIL SETTINGS
