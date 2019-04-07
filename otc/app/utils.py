@@ -30,7 +30,7 @@ class EventCalendar(HTMLCalendar):
         for event in events_from_day:
             is_start = get_is_start(event)
             type_color = get_type_color(event.type)
-            events_html += event.get_absolute_url(type_color) + "<br>"
+            events_html += event.get_absolute_url(type_color, self.user) + "<br>"
 
         # check if there is a two hour game
         if events_html == '':
@@ -39,7 +39,7 @@ class EventCalendar(HTMLCalendar):
                     type_color = get_type_color(ev.type)
                     is_middle = get_is_middle(ev, old_start_time)
                     is_end = get_is_end(ev, old_start_time)
-                    events_html += ev.get_absolute_url(type_color) + "<br>"
+                    events_html += ev.get_absolute_url(type_color, self.user) + "<br>"
 
         if day == 0:
             return '<td class="noday">&nbsp;</td>'
@@ -181,7 +181,11 @@ class EventCalendar(HTMLCalendar):
                         return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 15px 15px">%s</td>' % (
                             self.cssclasses[weekday], type_color['type'], events_html)
             else:
-                return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
+                if events_html == '':
+                    return '<td class="%s">%s</td>' % (self.cssclasses[weekday], events_html)
+                else:
+                    return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 15px 15px">%s</td>' % (
+                        self.cssclasses[weekday], type_color['type'], events_html)
 
 
 def get_year_dic():

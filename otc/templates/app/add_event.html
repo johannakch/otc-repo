@@ -22,7 +22,7 @@
     {% if messages %}
     {% for message in messages %}
     <br/>
-    <div class="alert alert-primary" role="alert">
+    <div class="alert alert-warning" role="alert">
         {{ message }}
     </div>
     {% endfor %}
@@ -32,7 +32,7 @@
     {% for error in field.errors %}
     <div class="alert alert-danger">
         <strong>{{ error|escape }}</strong>
-    </div
+    </div>
     {% endfor %}
     {% endfor %}
     {% for error in form.non_field_errors %}

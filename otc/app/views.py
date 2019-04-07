@@ -83,15 +83,15 @@ def add_event(request, year, month, day, hour):
     time_value = datetime.time(int(hour), 00)
     context['einzel'] = True # wert der sich merkt ob einzel oder doppelbutton oben im form gewählt wurde
     if request.method == 'POST':
-        print("POST")
+        #print("POST")
         # initialwerte für duration je nach einzel oder doppel, wenn einer der buttons oben im form gedrückt wurde
         if 'einzel' in request.POST:
-            print("einzel selected")
+            #print("einzel selected")
             context['einzel'] = True
             context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1}, is_basic_user=iba, year=year,
                                         month=month, day=day, type='einzel')
         elif 'doppel' in request.POST:
-            print("doppel selected")
+            #print("doppel selected")
             context['einzel'] = False
             context['form'] = EventForm(initial={'start_time': time_value, 'duration': 2}, is_basic_user=iba, year=year,
                                         month=month, day=day, type='doppel')
@@ -186,10 +186,18 @@ def show_event(request, id):
     context['id'] = id
     event = Event.objects.get(id=id)
     players_list = [player.get_full_name() for player in event.players.all() if event.players.all()]
+    if event.externPlayer1:
+        players_list.append(event.externPlayer1)
+    if event.externPlayer2:
+        players_list.append(event.externPlayer2)
+    if event.externPlayer3:
+        players_list.append(event.externPlayer3)
     context['players'] = players_list
+    context['creator'] = event.creator.get_full_name()
     context['event'] = event
     # wenn aktueller user creator oder einer der players ist -> löschen anzeigen
-    if (event.creator == request.user or len(Event.objects.filter(players__id=request.user.id)) > 0):
+    ids = [player.id for player in event.players.all()]
+    if event.creator == request.user or request.user.id in ids:
         context['is_member_of_event'] = True
     else:
         context['is_member_of_event'] = False

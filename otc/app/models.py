@@ -5,6 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User as user
 
 from enum import Enum
 
@@ -52,10 +53,10 @@ class Event(models.Model):
             overlap = True
         return overlap
 
-    def get_absolute_url(self, type_color):
+    def get_absolute_url(self, type_color, cur_user):
         url = reverse('show_event', args=[self.id])
         return u'<a href="%s" style="color: %s">%s%s</a>' \
-               % (url, type_color['font'], self.title, get_player_names(self, [p for p in self.players.all()]))
+               % (url, type_color['font'], self.title, get_player_names(self, [p for p in self.players.all()], cur_user))
 
     def clean(self):
         events = Event.objects.filter(day=self.day)
@@ -75,9 +76,17 @@ class Event(models.Model):
         return self.title
 
 
-def get_player_names(event, players):
+def get_player_names(event, players, cur_user):
     type_list = ['Einzelspiel', 'Doppelspiel']
     player_list = [player.get_full_name() for player in players if event.type in type_list]
+    if event.externPlayer1:
+        player_list.append(event.externPlayer1)
+    if event.externPlayer2:
+        player_list.append(event.externPlayer2)
+    if event.externPlayer3:
+        player_list.append(event.externPlayer3)
+
     if player_list == []:
         return ''
-    return ': '+', '.join(player_list)
+    player_list.append(event.creator.get_full_name())
+    return ': '+', '.join(sorted(player_list))
