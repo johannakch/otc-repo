@@ -30,7 +30,7 @@ class EventCalendar(HTMLCalendar):
         for event in events_from_day:
             is_start = get_is_start(event)
             type_color = get_type_color(event.type)
-            events_html += event.get_absolute_url(type_color, self.user) + "<br>"
+            events_html += event.get_absolute_url(type_color, self.user, is_start) + "<br>"
 
         # check if there is a two hour game
         if events_html == '':
@@ -39,7 +39,7 @@ class EventCalendar(HTMLCalendar):
                     type_color = get_type_color(ev.type)
                     is_middle = get_is_middle(ev, old_start_time)
                     is_end = get_is_end(ev, old_start_time)
-                    events_html += ev.get_absolute_url(type_color, self.user) + "<br>"
+                    events_html += ev.get_absolute_url(type_color, self.user, is_start) + "<br>"
 
         if day == 0:
             return '<td class="noday">&nbsp;</td>'
@@ -74,7 +74,7 @@ class EventCalendar(HTMLCalendar):
         a(self.formatweekheader())
         a('\n')
         for i in range(8, 24):
-            events = Event.objects.filter(day__lte=end).filter(day__gte=start).filter(start_time=str(i) + ':00:00')
+            events = Event.objects.filter(day__lte=end).filter(day__gte=start).filter(Q(start_time=str(i) + ':00:00') | Q(start_time=str(i)+':30:00'))
             for event in events:
                 # checks if game is doppel AND two hours, because a Doppel can be also 1 hour
                 # create copy of two hour event (without saving it to db)
@@ -273,7 +273,6 @@ def get_number_of_exts(events):
         if not event.externPlayer3 == '':
             count = count + 1
     return count
-
 
 
 def str_to_bool(string):

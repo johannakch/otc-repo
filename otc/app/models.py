@@ -53,10 +53,10 @@ class Event(models.Model):
             overlap = True
         return overlap
 
-    def get_absolute_url(self, type_color, cur_user):
+    def get_absolute_url(self, type_color, cur_user, is_start):
         url = reverse('show_event', args=[self.id])
-        return u'<a href="%s" style="color: %s">%s%s</a>' \
-               % (url, type_color['font'], self.title, get_player_names(self, [p for p in self.players.all()], cur_user))
+        return u'<a href="%s" style="color: %s">%s<br/>%s%s</a>' \
+               % (url, type_color['font'], get_title(self, is_start), get_time(self, is_start), get_player_names(self, [p for p in self.players.all()], cur_user))
 
     def clean(self):
         events = Event.objects.filter(day=self.day)
@@ -70,6 +70,7 @@ class Event(models.Model):
                             event.start_time) + '-' + str(event.get_end_time()))
 
     def get_end_time(self):
+        print(self.start_time.hour+self.duration)
         return self.start_time.replace(hour=(self.start_time.hour+self.duration))
 
     def __str__(self):
@@ -90,3 +91,13 @@ def get_player_names(event, players, cur_user):
         return ''
     player_list.append(event.creator.get_full_name())
     return ': '+', '.join(sorted(player_list))
+
+def get_time(event, is_start):
+    if is_start or event.duration == 1:
+        return str(event.start_time.strftime('%H:%M'))+'-'+str(event.start_time.hour+event.duration)+':'+str(event.start_time.strftime('%M'))
+    return ''
+
+def get_title(event, is_start):
+    if is_start or event.duration == 1:
+        return event.title
+    return ''
