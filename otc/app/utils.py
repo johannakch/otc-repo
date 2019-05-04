@@ -145,7 +145,7 @@ class EventCalendar(HTMLCalendar):
             # if self.twohoursgame:
             #     events_html += self.twohoursgame.get_absolute_url() + "<br>"
             #     self.twohoursgame = None
-            url = reverse('add_event', args=(theyear, themonth, day, hour))
+            url = reverse('add_event', args=(theyear, themonth, day, hour, self.courtnumber))
             if admin_user:
                 if events_html == '':
                     return '<td class="%s"><a href="%s" style="color: #2C3E50">+</a></td>' % (

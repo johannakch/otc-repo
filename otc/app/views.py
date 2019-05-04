@@ -73,11 +73,14 @@ def create_base_calendar(request, today, courtnumber):
     return cal
 
 
-def add_event(request, year, month, day, hour):
+def add_event(request, year, month, day, hour, pnumber):
     context = {}
     context['date'] = format_date(day, month, year)
     iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
     # boolean der form und html verändert, je nachdem ob es ein basic user oder ein staff/superuser ist
+    place_number = 3
+    if iba:
+        place_number = pnumber
     context['is_basic_user'] = iba
     context['user'] = str(request.user)
     time_value = datetime.time(int(hour), 00)
@@ -89,27 +92,27 @@ def add_event(request, year, month, day, hour):
             #print("einzel selected")
             context['einzel'] = True
             context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1}, is_basic_user=iba, year=year,
-                                        month=month, day=day, type='einzel')
+                                        month=month, day=day, type='einzel', number=place_number)
         elif 'doppel' in request.POST:
             #print("doppel selected")
             context['einzel'] = False
             context['form'] = EventForm(initial={'start_time': time_value, 'duration': 2}, is_basic_user=iba, year=year,
-                                        month=month, day=day, type='doppel')
+                                        month=month, day=day, type='doppel', number=place_number)
         else:
             updated_request = request.POST.copy()
             new_event_form = EventForm(updated_request, is_basic_user=iba, year=year, month=month, day=day,
-                                       type='einzel')
+                                       type='einzel', number=place_number)
             if iba:
                 einzel_selected = str_to_bool(request.POST.get("einzel-selected"))
                 # type setzen aus vorheriger buttonauswahl
                 if einzel_selected:
                     updated_request.update({'type': 'Einzelspiel',"title":'Reserviert für'})
                     new_event_form = EventForm(updated_request, is_basic_user=iba, year=year, month=month, day=day,
-                                               type='einzel')
+                                               type='einzel', number=place_number)
                 else:
                     updated_request.update({'type': 'Doppelspiel',"title":'Reserviert für'})
                     new_event_form = EventForm(updated_request, is_basic_user=iba, year=year, month=month, day=day,
-                                               type='doppel')
+                                               type='doppel', number=place_number)
             context['form'] = new_event_form
             # TODO: Wenn kein Mitspieler ausgewählt wird ist es doch auch ok oder? Warum required? -> Marius fragen
             if new_event_form.is_valid():
@@ -137,7 +140,7 @@ def add_event(request, year, month, day, hour):
     else:
         if (hasReservationRight(request.user, int(year), int(month), int(day))):
             context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1}, is_basic_user=iba, year=year,
-                                        month=month, day=day, type='einzel')
+                                        month=month, day=day, type='einzel', number=place_number)
         else:
             print("Error: No Reservationright")
             messages.info(request, 'Du hast in dieser Woche kein Recht mehr weitere Reservierungen vorzunehmen!')
