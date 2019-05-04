@@ -71,6 +71,8 @@ class Event(models.Model):
 
     def get_end_time(self):
         print(self.start_time.hour+self.duration)
+        if self.start_time.replace(hour=(self.start_time.hour+self.duration)).hour > 23:
+            return 23
         return self.start_time.replace(hour=(self.start_time.hour+self.duration))
 
     def __str__(self):

@@ -79,7 +79,7 @@ def add_event(request, year, month, day, hour, pnumber):
     iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
     # boolean der form und html verändert, je nachdem ob es ein basic user oder ein staff/superuser ist
     place_number = 3
-    if iba:
+    if not iba:
         place_number = pnumber
     context['is_basic_user'] = iba
     context['user'] = str(request.user)
