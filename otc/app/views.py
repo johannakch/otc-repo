@@ -200,7 +200,7 @@ def show_event(request, id):
     context['event'] = event
     # wenn aktueller user creator oder einer der players ist -> löschen anzeigen
     ids = [player.id for player in event.players.all()]
-    if event.creator == request.user or request.user.id in ids:
+    if event.creator == request.user or request.user.id in ids or request.user is not iba:
         context['is_member_of_event'] = True
     else:
         context['is_member_of_event'] = False
