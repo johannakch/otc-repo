@@ -91,12 +91,12 @@ def add_event(request, year, month, day, hour, pnumber):
         if 'einzel' in request.POST:
             #print("einzel selected")
             context['einzel'] = True
-            context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1}, is_basic_user=iba, year=year,
+            context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1, 'number':place_number}, is_basic_user=iba, year=year,
                                         month=month, day=day, type='einzel', number=place_number)
         elif 'doppel' in request.POST:
             #print("doppel selected")
             context['einzel'] = False
-            context['form'] = EventForm(initial={'start_time': time_value, 'duration': 2}, is_basic_user=iba, year=year,
+            context['form'] = EventForm(initial={'start_time': time_value, 'duration': 2, 'number':place_number}, is_basic_user=iba, year=year,
                                         month=month, day=day, type='doppel', number=place_number)
         else:
             updated_request = request.POST.copy()
@@ -139,7 +139,7 @@ def add_event(request, year, month, day, hour, pnumber):
             # TODO: Aussagekräftige Fehlermeldungens
     else:
         if (hasReservationRight(request.user, int(year), int(month), int(day))):
-            context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1}, is_basic_user=iba, year=year,
+            context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1, 'number':place_number}, is_basic_user=iba, year=year,
                                         month=month, day=day, type='einzel', number=place_number)
         else:
             print("Error: No Reservationright")

@@ -23,7 +23,7 @@ class EventForm(forms.ModelForm):
         selectedType = kwargs.pop('type')
         place_number = kwargs.pop('number')
         super(EventForm, self).__init__(*args, **kwargs)
-        events = Event.objects.filter(day=datetime.date(year=int(y), month=int(m), day=int(d))).filter(number=3)
+        events = Event.objects.filter(day=datetime.date(year=int(y), month=int(m), day=int(d))).filter(number=place_number)
         eventTimes = [int(x.start_time.strftime("%H")) for x in events]
         # es sollten keine zeiten vor der aktuellen anklickbar sein,
         # wenn es um einen termin am aktuellen tag geht
