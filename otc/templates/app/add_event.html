@@ -112,23 +112,15 @@
         {% endif %}
         <div class="row">
             <div class="col-sm">
-                <div class="dropdown">
-                    <p style="line-height: 40%">Spieler</p>
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            aria-haspopup="true" aria-expanded="false"
-                            data-toggle="dropdown"
-                            onclick="myFunction()">auswählen
-                    </button>
-                    <div id="myDropdown" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <input class="form-control" type="text" placeholder="Suche..." id="myInput"
-                               onkeyup="filterFunction()">
-                        {% for item in form.players %}
-                        {% if item|is_not_self:user %}
-                        <div class="dropdown-item">{{ item|format_name }}</div>
-                        {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
+                <p style="line-height: 40%">Spieler</p>
+                <select name="players" class="selectpicker" multiple data-live-search="true" title="auswählen">
+                    {% for item in form.players %}
+                    {% if item|is_not_self:user %}
+                    {{ item|format_name }}
+                    {% endif %}
+                    {% endfor %}
+                </select>
+
             </div>
         </div>
         <br/>
@@ -162,31 +154,5 @@
     </form>
     <br/>
 </div>
-
-<script>
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-
-function filterFunction() {
-  var input, filter, ul, li, a, i;
-  input = document.getElementById("myInput");
-  filter = input.value.toUpperCase();
-  div = document.getElementById("myDropdown");
-  a = div.getElementsByClassName("dropdown-item");
-  for (i = 0; i < a.length; i++) {
-    txtValue = a[i].textContent || a[i].innerText;
-    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-      a[i].style.display = "";
-    } else {
-      a[i].style.display = "none";
-    }
-  }
-}
-
-
-</script>
 
 {% endblock %}

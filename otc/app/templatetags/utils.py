@@ -17,7 +17,7 @@ def get_item(dic, key):
 
 @register.filter
 def is_not_self(item, current_user):
-    if item.data['label'] != current_user:
+    if item.data['label'] != current_user and item.data['label'] != 'anonym':
         return True
     return False
 
