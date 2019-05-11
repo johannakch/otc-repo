@@ -207,6 +207,14 @@ def hasReservationRight(user, theyear, themonth, day):
     usersevents2 = weeklyevents.filter(players__id=user.id).filter(Q(type='Einzelspiel') or Q(type='Doppelspiel'))
     return (not (len(usersevents) > 0) and not (len(usersevents2) > 0))
 
+def inbetween_two_weeks(theyear, themonth, theday):
+    day_to_reservate = datetime.date(year=theyear, month=themonth, day=theday)
+    day_of_week = datetime.date.today().weekday()
+    to_end_of_in_two_weeks = datetime.timedelta(days=20 - day_of_week)
+    print("***", to_end_of_in_two_weeks)
+    day_in_two_weeks = datetime.date.today() + to_end_of_in_two_weeks
+    return day_to_reservate <= day_in_two_weeks
+
 
 def week_magic(day):
     day_of_week = day.weekday()

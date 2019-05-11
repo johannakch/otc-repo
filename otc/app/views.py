@@ -7,7 +7,7 @@ from django.core.mail import EmailMessage
 from django.contrib.auth.models import User
 
 from .forms import EventForm
-from .utils import EventCalendar, get_year_dic, hasReservationRight, get_this_seasons_events, get_number_of_exts, week_magic, str_to_bool
+from .utils import EventCalendar, get_year_dic, hasReservationRight, get_this_seasons_events, get_number_of_exts, week_magic, str_to_bool, inbetween_two_weeks
 from .models import Event, GameTypeChoice
 from django.core.exceptions import ValidationError
 
@@ -138,14 +138,20 @@ def add_event(request, year, month, day, hour, pnumber):
                     return render(request, 'app/add_event.html', context)
             # TODO: Aussagekräftige Fehlermeldungens
     else:
-        if (hasReservationRight(request.user, int(year), int(month), int(day))):
+        if hasReservationRight(request.user, int(year), int(month), int(day)):
             context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1, 'number':place_number}, is_basic_user=iba, year=year,
                                         month=month, day=day, type='einzel', number=place_number)
         else:
-            print("Error: No Reservationright")
+            # print("Error: No Reservationright")
             messages.info(request, 'Du hast in dieser Woche kein Recht mehr weitere Reservierungen vorzunehmen!')
             return HttpResponseRedirect(reverse('index'))
-    # print(context['form'])
+        if inbetween_two_weeks(int(year), int(month), int(day)):
+            context['form'] = EventForm(initial={'start_time': time_value, 'duration': 1, 'number': place_number},
+                                        is_basic_user=iba, year=year,
+                                        month=month, day=day, type='einzel', number=place_number)
+        else:
+            messages.info(request, 'Du kannst leider keine Reservierung soweit im Voraus eintragen!')
+            return HttpResponseRedirect(reverse('index'))
     return render(request, 'app/add_event.html', context)
 
 
