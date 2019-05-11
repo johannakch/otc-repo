@@ -133,8 +133,8 @@ def add_event(request, year, month, day, hour, pnumber):
                     new_event_form.save_m2m()
                     return HttpResponseRedirect(reverse('index'))
                 except ValidationError as err:
-                    print("Validation error: {0}".format(err))
-                    messages.info(request,"Error: {0}".format(err))
+                    # print("Validation error: {0}".format(err))
+                    messages.info(request,"{0}".format(err.message))
                     return render(request, 'app/add_event.html', context)
             # TODO: Aussagekräftige Fehlermeldungens
     else:

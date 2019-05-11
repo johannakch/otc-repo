@@ -56,7 +56,7 @@ class Event(models.Model):
     def get_absolute_url(self, type_color, cur_user, is_start):
         url = reverse('show_event', args=[self.id])
         return u'<a href="%s" style="color: %s">%s<br/>%s%s</a>' \
-               % (url, type_color['font'], get_title(self, is_start), get_time(self, is_start), get_player_names(self, [p for p in self.players.all()], cur_user))
+               % (url, type_color['font'], get_title(self, is_start), get_time(self, is_start), get_player_names(self, [p for p in self.players.all()], cur_user, is_start))
 
     def clean(self):
         events = Event.objects.filter(day=self.day)
@@ -66,8 +66,9 @@ class Event(models.Model):
                     print(self)
                 if self.check_overlap(event.start_time, event.get_end_time(), self.start_time, self.get_end_time(), event.number, self.number):
                     raise ValidationError(
-                        'Leider überschneidet sich die Reservierung mit einer anderen: ' + str(event.day) + ', ' + str(
+                        'Leider überschneidet sich die Reservierung mit einer anderen: ' + str(event.day.strftime("%d-%m-%Y")) + ', ' + str(
                             event.start_time) + '-' + str(event.get_end_time()))
+
 
     def get_end_time(self):
         print(self.start_time.hour+self.duration)
@@ -79,7 +80,7 @@ class Event(models.Model):
         return self.title
 
 
-def get_player_names(event, players, cur_user):
+def get_player_names(event, players, cur_user, is_start):
     type_list = ['Einzelspiel', 'Doppelspiel']
     player_list = [player.get_full_name() for player in players if event.type in type_list]
     if event.externPlayer1:
@@ -89,7 +90,7 @@ def get_player_names(event, players, cur_user):
     if event.externPlayer3:
         player_list.append(event.externPlayer3)
 
-    if player_list == []:
+    if player_list == [] or (not is_start and event.duration > 1):
         return ''
     player_list.append(event.creator.get_full_name())
     return ': '+', '.join(sorted(player_list))

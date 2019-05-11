@@ -123,7 +123,8 @@ class EventCalendar(HTMLCalendar):
         current_date = datetime.date(year=theyear, month=themonth, day=day)
         admin_user = (self.user.is_superuser or self.user.is_staff) and (
                 self.courtnumber == 3 or self.courtnumber == 2 or self.courtnumber == 1)
-        active_user = self.user.is_active and not self.user.is_staff and not self.user.is_superuser and self.courtnumber == 3
+        active_user = self.user.is_active and not self.user.is_staff and not self.user.is_superuser and (
+                self.courtnumber == 3 or self.courtnumber == 2 or self.courtnumber == 1)
 
         if is_time_in_path(hour, current_date):
             if events_html == '':
@@ -165,8 +166,11 @@ class EventCalendar(HTMLCalendar):
                             self.cssclasses[weekday], type_color['type'], events_html)
             elif active_user:
                 if events_html == '':
-                    return '<td class="%s"><a href="%s" style="color: #2C3E50">+</a></td>' % (
-                        self.cssclasses[weekday], url)
+                    if self.courtnumber == 3:
+                        return '<td class="%s"><a href="%s" style="color: #2C3E50">+</a></td>' % (
+                            self.cssclasses[weekday], url)
+                    else:
+                        return '<td class="%s"></a></td>' % (self.cssclasses[weekday])
                 else:
                     if is_start:
                         return '<td class="%s" style="background-color: %s; border-radius: 15px 15px 0px 0px">%s</td>' % (
