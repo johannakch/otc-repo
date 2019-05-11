@@ -61,10 +61,12 @@
                     <th>Datum</th>
                     <th>Uhrzeit</th>
                     <th>Event</th>
+                    <th>Platznr.</th>
                 </tr>
                 {% for month in event_months_dic %}
                 <tr>
                     <th style="background-color: #F2F3F3">{{ month|format_month }}</th>
+                    <th style="background-color: #F2F3F3"></th>
                     <th style="background-color: #F2F3F3"></th>
                     <th style="background-color: #F2F3F3"></th>
                 </tr>
@@ -78,6 +80,9 @@
                     </td>
                     <td width="300" height="20">
                         {{ event.title }}
+                    </td>
+                    <td width="50" height="20">
+                        {{ event.number }}
                     </td>
                 </tr>
                 {% endfor %}
