@@ -76,11 +76,11 @@ def create_base_calendar(request, today, courtnumber):
 def add_event(request, year, month, day, hour, pnumber):
     context = {}
     context['date'] = format_date(day, month, year)
-    iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
+    # iba == is basic user
+    iba = not request.user.is_staff and not request.user.is_superuser and request.user.is_active
     # boolean der form und html verändert, je nachdem ob es ein basic user oder ein staff/superuser ist
-    place_number = 3
-    if not iba:
-        place_number = pnumber
+    place_number = pnumber
+    context['pnumber'] = pnumber
     context['is_basic_user'] = iba
     context['user'] = str(request.user)
     time_value = datetime.time(int(hour), 00)

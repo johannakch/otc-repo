@@ -166,7 +166,7 @@ class EventCalendar(HTMLCalendar):
                             self.cssclasses[weekday], type_color['type'], events_html)
             elif active_user:
                 if events_html == '':
-                    if self.courtnumber == 3:
+                    if self.courtnumber == 3 or self.courtnumber == 2:
                         return '<td class="%s"><a href="%s" style="color: #2C3E50">+</a></td>' % (
                             self.cssclasses[weekday], url)
                     else:

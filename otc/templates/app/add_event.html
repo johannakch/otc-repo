@@ -7,7 +7,7 @@
     <br/>
     <div class="row">
         <div class="col-auto mr-auto">
-            <h2>Neue Reservierung {% if is_basic_user %} auf Platz 3 {% endif %}
+            <h2>Neue Reservierung auf Platz {{ pnumber }}
                 <small class="text-muted">am {{ date }}</small>
             </h2>
         </div>
@@ -69,11 +69,11 @@
                 <input type="hidden" name="einzel-selected" value="{{einzel}}">
                 {% if is_basic_user %}
                 {% if einzel %}
-                <input type="submit" disabled="true" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
+                <input type="submit" name="einzel" value="Einzelspiel" class="save btn btn-success"/>
                 <input type="submit" name="doppel" value="Doppelspiel" class="btn btn-secondary"/>
                 {% else %}
                 <input type="submit" name="einzel" value="Einzelspiel" class="btn btn-secondary"/>
-                <input type="submit" disabled="true" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
+                <input type="submit" name="doppel" value="Doppelspiel" class="save btn btn-success"/>
                 {% endif %}
                 {% endif %}
             </div>
