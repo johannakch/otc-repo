@@ -79,13 +79,13 @@ class EventForm(forms.ModelForm):
                 msg = "Für ein Doppelspiel müssen genau drei Mitspieler ausgewählt werden! (Beliebige Kombination aus Externen und Internen)"
                 self.add_error('players', msg)
 
+
 def get_number_of_One_events_exts(cleaned_data):
-        count = 0
-        if not cleaned_data.get('externPlayer1') == '':
-            count = count + 1
-        if not cleaned_data.get('externPlayer2') == '':
-            count = count + 1
-        if not cleaned_data.get('externPlayer3') == '':
-            count = count + 1
-        print("exts"+str(count))
-        return count
+    count = 0
+    if not cleaned_data.get('externPlayer1') == '':
+        count = count + 1
+    if not cleaned_data.get('externPlayer2') == '':
+        count = count + 1
+    if not cleaned_data.get('externPlayer3') == '':
+        count = count + 1
+    return count

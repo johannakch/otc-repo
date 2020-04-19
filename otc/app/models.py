@@ -21,6 +21,7 @@ class GameTypeChoice(Enum):   # A subclass of Enum
     mr = "Medenrunde"
     trn = "Training"
 
+
 class Event(models.Model):
     creator = models.ForeignKey(User, related_name='creator', null=True, on_delete=models.SET_NULL)
     day = models.DateField(u'Datum', help_text=u'Tag der Reservierung')
@@ -35,19 +36,18 @@ class Event(models.Model):
     externPlayer2 = models.CharField(u'Externer 2', max_length=200, help_text='Name des zweiten externen Mitspielers (falls vorhanden)', blank=True)
     externPlayer3 = models.CharField(u'Externer 3', max_length=200, help_text='Name des dritten externen Mitspielers (falls vorhanden)',blank=True)
 
-
     class Meta:
         verbose_name = u'Reservierung'
         verbose_name_plural = u'Reservierungen'
 
     def check_overlap(self, fixed_start, fixed_end, new_start, new_end, fixed_number, new_number):
+        print(fixed_number, new_number)
         if not fixed_number == new_number:
             return False
         overlap = False
         if new_start == fixed_end or new_end == fixed_start:  # edge case
             overlap = False
-        elif (new_start >= fixed_start and new_start <= fixed_end) or (
-                new_end >= fixed_start and new_end <= fixed_end):  # start within fixed or end within fixed
+        elif new_start >= fixed_start and new_start <= fixed_end or new_end >= fixed_start and new_end <= fixed_end: # start within fixed or end within fixed
             overlap = True
         elif new_start <= fixed_start and new_end >= fixed_end:  # outter limits
             overlap = True
@@ -68,7 +68,6 @@ class Event(models.Model):
                     raise ValidationError(
                         'Leider überschneidet sich die Reservierung mit einer anderen: ' + str(event.day.strftime("%d-%m-%Y")) + ', ' + str(
                             event.start_time) + '-' + str(event.get_end_time()))
-
 
     def get_end_time(self):
         print(self.start_time.hour+self.duration)
@@ -95,10 +94,12 @@ def get_player_names(event, players, cur_user, is_start):
     player_list.append(event.creator.get_full_name())
     return ': '+', '.join(sorted(player_list))
 
+
 def get_time(event, is_start):
     if is_start or event.duration == 1:
         return str(event.start_time.strftime('%H:%M'))+'-'+str(event.start_time.hour+event.duration)+':'+str(event.start_time.strftime('%M'))
     return ''
+
 
 def get_title(event, is_start):
     if is_start or event.duration == 1:

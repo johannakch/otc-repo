@@ -119,7 +119,7 @@ def add_event(request, year, month, day, hour, pnumber):
                 new_event = new_event_form.save(commit=False)
                 new_event.creator = request.user
                 if iba:  # Für basic user immer Platznummer 3
-                    new_event.number = 3
+                    new_event.number = pnumber
                     new_event.title = "Reserviert für"
                     # type setzen aus vorheriger buttonauswahl
                     if request.POST.get("einzel-selected", None):
@@ -165,7 +165,7 @@ def show_event(request, id):
     iba = (not (request.user.is_staff) and not (request.user.is_superuser) and request.user.is_active)
     if 'delete' in request.POST:
         id = int(request.POST.get('delete'))
-        print('deleted event: ID ' + str(request.POST.get('delete')))
+        # print('deleted event: ID ' + str(request.POST.get('delete')))
         event_to_delete = Event.objects.filter(id=id)
         superusers = [user.email for user in User.objects.filter(is_superuser=True)]
         subject = 'Event wurde gelöscht!'
