@@ -16,36 +16,36 @@ class EventForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         is_basic_user = kwargs.pop('is_basic_user')
-        y = kwargs.pop('year')
-        m = kwargs.pop('month')
-        d = kwargs.pop('day')
+        self.y = kwargs.pop('year')
+        self.m = kwargs.pop('month')
+        self.d = kwargs.pop('day')
         selectedType = kwargs.pop('type')
         place_number = kwargs.pop('number')
         super(EventForm, self).__init__(*args, **kwargs)
-        events = Event.objects.filter(day=datetime.date(year=int(y), month=int(m), day=int(d))).filter(number=place_number)
+        events = Event.objects.filter(day=datetime.date(year=int(self.y), month=int(self.m), day=int(self.d))).filter(number=place_number)
         eventTimes = [int(x.start_time.strftime("%H")) for x in events]
         # es sollten keine zeiten vor der aktuellen anklickbar sein,
         # wenn es um einen termin am aktuellen tag geht
         starthour = 8
         today = datetime.date.today()
-        if (today.year==int(y) and today.month==int(m) and today.day==int(d)):
+        if today.year == int(self.y) and today.month == int(self.m) and today.day == int(self.d):
             starthour = timezone.now().hour+3
-            if starthour>23:
+            if starthour > 23:
                 starthour = 23
         self.fields['start_time'].widget.choices = [(datetime.time(hour=x), '{:02d}:00'.format(x)) for x in range(starthour, 24)
                                                     if x not in eventTimes]
         if is_basic_user:
             self.fields['type'].choices = [(tag.value, tag.value) for tag in GameTypeChoice if
                                            tag.value == "Einzelspiel" or tag.value == "Doppelspiel"]
-            self.fields['duration'] = forms.IntegerField(min_value=1,max_value=2)
+            self.fields['duration'] = forms.IntegerField(min_value=1, max_value=2)
             if selectedType == 'einzel':
                 self.fields['duration'] = forms.IntegerField(min_value=1, max_value=1)
                 self.fields['type'].initial = 'Einzelspiel'
             if selectedType == 'doppel':
-                self.fields['duration'] = forms.IntegerField(min_value=1,max_value=2)
+                self.fields['duration'] = forms.IntegerField(min_value=1, max_value=2)
         else:
             self.fields['type'].choices = [(tag.value, tag.value) for tag in GameTypeChoice]
-            self.fields['duration'] = forms.IntegerField(min_value=1,max_value=16)
+            self.fields['duration'] = forms.IntegerField(min_value=1, max_value=16)
             self.fields['type'].initial = 'Einzelspiel'
 
     class Meta:
@@ -59,9 +59,8 @@ class EventForm(forms.ModelForm):
         cleaned_players = cleaned_data.get('players')
         players = 0
         if cleaned_players is not None:
-            current_date = datetime.date.today()
             has_no_reservation_right = [player for player in cleaned_players if not hasReservationRight(
-                player, current_date.year, current_date.month, current_date.day)]
+                                            player, int(self.y), int(self.m), int(self.d))]
 
             if has_no_reservation_right:
                 msg = "Folgende Spieler haben diese Woche bereits ihr Reservierungsrecht verbraucht: {}." \
