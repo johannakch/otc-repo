@@ -24,7 +24,7 @@ SECRET_KEY = '8#r*u3&kjc0h@+lvtkmqkivzb#oqpr4iz3+l0m+zi%8y!7skg!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['johannak.uber.space', 'localhost']
+ALLOWED_HOSTS = ['johannak.uber.space', 'localhost']  # for Prod: ['www.otc-rs.de', 'otc-rs.de', 'johannak.uber.space', 'localhost']
 
 # Application definition
 
@@ -118,9 +118,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/static/' # for Prod: 'https://otc-rs.de/static/'
 STATIC_ROOT = '/var/www/virtual/johannak/html/static/'
-LOGIN_REDIRECT_URL = '/app/' # for Production: '/otc-repo/otc/app/'
+LOGIN_REDIRECT_URL = '/app/'  # for Prod: '/'
 LOGOUT_REDIRECT_URL = 'login'
 
 # EMAIL SETTINGS
@@ -128,5 +128,5 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'ockenheim.tv@gmail.com'
-EMAIL_HOST_PASSWORD = 'JeGRPPW4L7JkGnxB'
+EMAIL_HOST_PASSWORD = '7yrD9nt7oBDkzdr4'
 EMAIL_PORT = 587

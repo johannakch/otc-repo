@@ -1,10 +1,9 @@
 from django import forms
-from django.contrib.auth.models import User
 from django.utils import timezone
-from django.forms import CheckboxSelectMultiple
 
 from .models import Event
 from .models import GameTypeChoice
+from .utils import hasReservationRight
 
 import datetime
 
@@ -57,24 +56,36 @@ class EventForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        cleaned_players = cleaned_data.get('players')
         players = 0
-        if not (cleaned_data.get('players')==None):
-            #print('Playerscount: '+str(len(cleaned_data.get('players'))))
-            players = len(cleaned_data.get('players'))
-            if cleaned_data.get('type')=='Einzelspiel':
-                if (len(cleaned_data.get('players'))) > 1:
+        if cleaned_players is not None:
+            current_date = datetime.date.today()
+            has_no_reservation_right = [player for player in cleaned_players if not hasReservationRight(
+                player, current_date.year, current_date.month, current_date.day)]
+
+            if has_no_reservation_right:
+                msg = "Folgende Spieler haben diese Woche bereits ihr Reservierungsrecht verbraucht: {}." \
+                      " Wähle eine/n andere/n Mitspieler/in aus.".format(
+                        ', '.join([player.first_name + ' ' + player.last_name for player in has_no_reservation_right]))
+                self.add_error('players', msg)
+
+            # print('Playerscount: '+str(len(cleaned_data.get('players'))))
+            players = len(cleaned_players)
+            if cleaned_data.get('type') == 'Einzelspiel':
+                if len(cleaned_players) > 1:
                     msg = "Für ein Einzelspiel darf nicht mehr als ein Mitspieler ausgewählt werden!"
                     self.add_error('players', msg)
-            if cleaned_data.get('type')=='Doppelspiel':
-                if (len(cleaned_data.get('players'))) > 3:
+            if cleaned_data.get('type') == 'Doppelspiel':
+                if len(cleaned_players) > 3:
                     msg = "Für ein Doppelspiel dürfen nicht mehr als drei Mitspieler ausgewählt werden!"
                     self.add_error('players', msg)
+
         exts = get_number_of_One_events_exts(cleaned_data)
-        if cleaned_data.get('type')=='Einzelspiel':
+        if cleaned_data.get('type') == 'Einzelspiel':
             if (players + exts) != 1:
                 msg = "Für ein Einzelspiel muss genau ein Mitspieler ausgewählt werden! (Externer oder Interner)"
                 self.add_error('players', msg)
-        if cleaned_data.get('type')=='Doppelspiel':
+        if cleaned_data.get('type') == 'Doppelspiel':
             if (players + exts) != 3:
                 msg = "Für ein Doppelspiel müssen genau drei Mitspieler ausgewählt werden! (Beliebige Kombination aus Externen und Internen)"
                 self.add_error('players', msg)
